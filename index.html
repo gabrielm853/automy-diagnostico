@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Automy · Onde sua empresa perde tempo?</title>
+<meta name="description" content="7 perguntas, 1 minuto. Descubra quanto sua empresa perde por ano e fale direto com o Gabriel, da Automy.">
+<meta property="og:title" content="Onde sua empresa perde tempo?">
+<meta property="og:description" content="7 perguntas, 1 minuto. Sem compromisso.">
+<meta name="theme-color" content="#121a52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: uma pergunta por tela sobre fundo azul-tinta; o progresso é um relógio que se completa — o tempo que a Automy devolve */
+:root{
+  --ink:#121a52; --glass:rgba(255,255,255,.06); --glass-2:rgba(255,255,255,.1); --edge:rgba(255,255,255,.14);
+  --fg:#f4f5fb; --muted:#aeb5d6; --amber:#ffb547; --amber-2:#ff8a3d; --amber-ink:#2a1a00; --wa:#25c26a; --bubble:#005c4b; --bubble-fg:#effff8;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:radial-gradient(120% 60% at 85% -10%,rgba(255,181,71,.24),transparent 60%),radial-gradient(90% 60% at -10% 110%,rgba(90,120,255,.38),transparent 60%);
+  background-attachment:fixed;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;box-sizing:border-box}
+.tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card{position:relative;flex:none;width:100%;max-width:420px;box-sizing:border-box;min-height:620px;padding:22px 22px 24px;border-radius:28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:1px solid var(--edge);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;gap:20px;overflow:hidden}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.brand{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 14px var(--amber)}
+.back{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;padding:6px 0}
+.mid{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.clock{position:relative;width:44px;height:44px;flex:none}
+.clock svg{width:44px;height:44px;transform:rotate(-90deg)}
+.clock circle{fill:none;stroke-width:4}
+.clock .trk{stroke:var(--edge)}
+.clock .val{stroke:url(#g);stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.3,.7,.2,1)}
+.clock span{position:absolute;inset:0;display:grid;place-items:center;font-size:15px}
+.step{display:flex;flex-direction:column;gap:16px;flex:1;animation:in .4s cubic-bezier(.2,.7,.2,1)}
+@keyframes in{from{opacity:.001;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hello{display:flex;align-items:center;gap:12px}
+.avatar{flex:none;width:58px;height:58px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,var(--amber),var(--amber-2),#7d95ff,var(--amber))}
+.avatar div{width:100%;height:100%;border-radius:50%;background:#2a3478;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px;border:3px solid var(--ink);box-sizing:border-box}
+.hello b{display:block;font-size:17px}
+.hello small{color:var(--muted);font-size:14px}
+.cheer{display:inline-flex;align-self:flex-start;gap:6px;font-size:14px;font-weight:700;color:var(--amber-ink);background:linear-gradient(90deg,var(--amber),var(--amber-2));padding:6px 12px;border-radius:999px;animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.6);opacity:.001}to{transform:none;opacity:1}}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8.5vw,38px);line-height:1.04;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1 em,h2 em{font-style:normal;color:var(--amber)}
+h2{font-family:var(--display);font-weight:700;font-size:25px;line-height:1.15;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0;color:var(--muted)}
+.lead{font-size:17px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.facts span{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;font-weight:600;line-height:1.25;padding:12px 6px;border-radius:16px;background:var(--glass);border:1px solid var(--edge)}
+.facts i{font-style:normal;font-size:22px;line-height:1}
+label{font-size:13px;font-weight:600;color:var(--muted)}
+input,textarea{width:100%;box-sizing:border-box;font:inherit;font-size:17px;color:var(--fg);background:rgba(0,0,0,.2);border:1.5px solid var(--edge);border-radius:14px;padding:14px 15px}
+input::placeholder,textarea::placeholder{color:#7d86ad}
+textarea{min-height:120px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 4px rgba(255,181,71,.18)}
+.field{display:flex;flex-direction:column;gap:7px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opts.grid{display:grid;grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;font:inherit;font-size:16px;font-weight:500;color:var(--fg);background:var(--glass);border:1.5px solid var(--edge);border-radius:16px;padding:13px 14px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s;min-width:0}
+.opt .e{flex:none;font-size:22px;line-height:1}
+.opt small{display:block;color:var(--muted);font-size:13px;font-weight:500}
+.opts.grid .opt{flex-direction:column;align-items:flex-start;gap:6px;padding:14px}
+.opt:hover{border-color:var(--amber);background:var(--glass-2);transform:translateY(-2px)}
+.opt[aria-pressed="true"]{border-color:var(--amber);background:rgba(255,181,71,.14);animation:tap .25s}
+@keyframes tap{50%{transform:scale(.96)}}
+.btn{font:inherit;font-size:17px;font-weight:700;border:0;border-radius:16px;padding:16px;cursor:pointer;background:linear-gradient(90deg,var(--amber),var(--amber-2));color:var(--amber-ink);text-align:center;text-decoration:none;display:block;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -10px rgba(255,160,60,.75)}
+.btn.wa{background:var(--wa);color:#04210f;animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,194,106,.55)}60%{box-shadow:0 0 0 14px rgba(37,194,106,0)}}
+.link{background:none;border:0;font:inherit;font-size:15px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px;text-align:center}
+.link:hover{color:var(--fg)}
+.spacer{flex:1}
+.err{color:#ff9b9b;font-size:14px}
+.hint{font-size:13px;color:var(--muted);text-align:center}
+.loss{border-radius:20px;padding:16px;background:linear-gradient(135deg,rgba(255,138,61,.22),rgba(255,181,71,.08));border:1px solid rgba(255,181,71,.4);display:flex;flex-direction:column;gap:2px}
+.loss small{font-size:13px;color:var(--muted);font-weight:600}
+.loss strong{font-family:var(--display);font-weight:800;font-size:46px;line-height:1;letter-spacing:-.03em;color:var(--amber);font-variant-numeric:tabular-nums}
+.loss>span{font-size:15px}
+.vh{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;font-weight:600;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--edge)}
+.vhin{display:inline-flex;align-items:center;gap:4px;color:var(--fg)}
+.vh input{width:84px;padding:6px 9px;font-size:15px;border-radius:10px}
+#vhout{font-size:15px;color:var(--amber);margin-top:6px}
+.qt{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.2;margin:6px 0 10px}
+#qbox{animation:in .35s cubic-bezier(.2,.7,.2,1)}
+.opt small.ex{color:var(--amber);opacity:.85;font-size:12px;margin-top:2px}
+.chat{border-radius:18px;overflow:hidden;border:1px solid var(--edge);background:#0b141a}
+.chathead{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#1f2c34}
+.chathead b{display:block;font-size:15px;line-height:1.2}
+.chathead small{color:var(--muted);font-size:12px}
+.avatar.sm{width:36px;height:36px;padding:2px}
+.avatar.sm div{font-size:15px;border-width:2px}
+.chatbody{padding:14px 10px;display:flex;flex-direction:column;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:14px 14px}
+.bubble .tm{display:block;text-align:right;font-size:11px;opacity:.7;margin-top:4px}
+.how{margin:0;padding-left:22px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:3px}
+.how li::marker{color:var(--amber);font-weight:700}
+.quote{border-left:3px solid var(--amber);padding:2px 0 2px 14px;font-family:var(--display);font-weight:500;font-size:17px;line-height:1.3;color:var(--fg)}
+.bubble{background:var(--bubble);color:var(--bubble-fg);border-radius:16px 16px 4px 16px;padding:12px 14px;white-space:pre-wrap;font-size:14px;align-self:flex-end;max-width:94%;box-shadow:0 10px 24px -14px rgba(0,0,0,.6)}
+details{font-size:14px;color:var(--muted)}
+details summary{cursor:pointer}
+details .bubble{margin-top:10px}
+.note{width:100%;max-width:420px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.note b{color:var(--fg)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.avatar{position:relative}
+.avatar img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;object-fit:cover;border:3px solid var(--ink);box-sizing:border-box}
+.avatar.sm img{inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);border-width:2px}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.step,.btn.wa,.cheer,.opt[aria-pressed="true"]{animation:none}.clock .val,.opt,.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<main class="card">
+  <div class="top">
+    <button class="back" id="back" hidden>← Voltar</button>
+    <span class="brand" id="brand"><i></i>Automy</span>
+    <div class="mid" id="mid" hidden>
+      <span id="count"></span>
+      <div class="clock" aria-hidden="true">
+        <svg viewBox="0 0 44 44"><defs><linearGradient id="g"><stop offset="0" stop-color="#ffb547"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient></defs>
+          <circle class="trk" cx="22" cy="22" r="19"/><circle class="val" id="ring" cx="22" cy="22" r="19"/></svg>
+        <span id="clocktxt">⏳</span>
+      </div>
+    </div>
+  </div>
+  <section class="step" id="step"></section>
+</main>
+
+<script>
+const FONE="5588981191444";
+// Endereço do CRM (Apps Script → Implantar → app da Web, termina em /exec).
+// Vazio = a página funciona igual, só não avisa o CRM.
+const CRM_URL="https://script.google.com/macros/s/AKfycbyoMJE3Gcn6geR5N3nAZ2XXPwNZPRZZrW_w6FJE6suTBGTzG4iQNRy7to2v5_jAwkOX/exec";
+// Foto do Gabriel: arquivo "foto.jpg" ao lado desta página. Sem o arquivo, aparece o "G".
+const FOTO="foto.jpg";
+const S={nome:"",empresa:"",ramo:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",hp:""};
+
+// ---- avisos para o CRM ----
+// Cada visita ganha um código sorteado (não diz quem é). O CRM usa para
+// contar até onde cada visita chegou, sem contar duas vezes quem volta.
+const sessao=Array.from(crypto.getRandomValues(new Uint8Array(12)),b=>"abcdefghijklmnopqrstuvwxyz0123456789"[b%36]).join("");
+let maxTela=-1, enviado=false, foiDireto=false;
+function avisar(dados){
+  if(!CRM_URL)return;
+  const corpo=JSON.stringify(Object.assign({s:sessao},dados));
+  // sendBeacon entrega mesmo se a pessoa sair da página logo em seguida.
+  try{if(navigator.sendBeacon&&navigator.sendBeacon(CRM_URL,corpo))return}catch(e){}
+  fetch(CRM_URL,{method:"POST",mode:"no-cors",keepalive:true,body:corpo}).catch(()=>{});
+}
+// A foto por cima do "G": se o arquivo não existir, a foto some e o "G" aparece.
+const foto=()=>FOTO?`<img src="${esc(FOTO)}" alt="Foto do Gabriel" onerror="this.remove()">`:"";
+const Q={tempo:{t:"Quantas horas por semana isso te toma, mais ou menos?",o:[["🙂","Até 2 horas",2],["😐","De 3 a 5 horas",4],["😩","De 6 a 10 horas",8],["🤯","Mais de 10 horas",12]]},
+ clientes:{t:"Quantos clientes você perde por mês por causa disso?",o:[["😕","1 ou 2 por mês",2],["😟","De 3 a 5 por mês",4],["😩","De 6 a 10 por mês",8],["🤯","Mais de 10 por mês",12]]}};
+const steps=[
+ {k:"intro"},
+ {k:"nome",c:()=>"Bora começar! 🚀",t:"Como você se chama, e qual o nome da sua empresa?"},
+ {k:"ramo",c:n=>`Prazer, ${n}! 👋`,t:"Qual é o ramo da sua empresa?",grid:true,
+  o:[["🛍️","Comércio / loja"],["💆","Saúde ou estética"],["🏋️","Academia ou esporte"],["🍔","Alimentação"],["🧰","Serviços"],["✍️","Outro"]]},
+ {k:"dor",c:n=>`Agora a mais importante, ${n} 💬`,t:"O que mais <em>toma o seu tempo</em> ou dá dor de cabeça hoje?",p:"Ex.: controlar quem pagou e quem tá devendo, fechar o caixa do mês na mão, responder orçamento um por um no WhatsApp, juntar pedido que chega de 3 lugares diferentes…"},
+ {k:"perda",c:()=>"Isso tem cara de prejuízo… 😬",t:"O que isso mais te faz <em>perder</em>?"},
+ {k:"decide",c:n=>`Tá dando certo, ${n}! 💪 Faltam só duas`,t:"Na hora de decidir, quem bate o martelo?",
+  o:[["👑","Eu mesmo, sou o dono"],["🤝","Eu e meu sócio, juntos"],["🙋","Outra pessoa decide"]]},
+ {k:"quando",c:n=>`Tá acabando, ${n}! Agora sim você começa a ganhar tempo ⚡`,t:"A gente resolve isso pra você. <em>Quando</em> você quer ver funcionando?",
+  o:[["🔥","O quanto antes","Ainda este mês"],["📅","Nos próximos meses","Sem pressa, mas quero"],["👀","Só estou conhecendo","Por enquanto, curiosidade"]]},
+ {k:"investir",loss:true,c:n=>`Última, ${n}! Olha só o tamanho disso 👇`,t:"Pensando nisso, quanto faria sentido <em>investir</em> pra resolver?",
+  grid:true,
+  o:[["🪙","Até R$ 300","Uma tarefa no automático, com tela própria","Ex.: painel com as vendas do mês"],["💵","De R$ 300 a R$ 600","Um processo inteiro resolvido","Ex.: cadastro de clientes com cobrança automática"],["💰","De R$ 600 a R$ 1.000","Um sistema pra uma área da empresa","Ex.: alunos, pagamentos e caixa num lugar só"],["💎","De R$ 1.000 a R$ 2.000","Um sistema pra várias áreas","Ex.: clientes, estoque, caixa e agenda juntos"],["🚀","Mais de R$ 2.000","A empresa toda num sistema só","Ex.: WhatsApp, Instagram e site ligados a ele"],["🤔","Ainda não sei","Quero ver como fica primeiro"]]},
+ {k:"fim"}
+];
+let i=0;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const N=steps.length-2, C=2*Math.PI*19;
+const first=()=>S.nome.trim().split(/\s+/)[0]||"";
+const waDireto="https://wa.me/"+FONE+"?text="+encodeURIComponent("Oi, Gabriel! Vi seu Instagram e queria conversar sobre a minha empresa.");
+$("ring").style.strokeDasharray=C;
+const brl=n=>"R$ "+Math.round(n).toLocaleString("pt-BR");
+function perda(){const q=Q[S.tipo]||Q.tempo;const it=q.o.find(o=>o[1]===S.qtd);const v=it?it[2]:0;const n=S.tipo==="clientes"?v*12:v*52;return{n,h:n,d:Math.round(n/8)}}
+function tempo5(h){const m=Math.round(h*5/8/22);if(m<12)return "uns "+m+" meses inteiros";const a=m/12;return a<1.25?"1 ano inteiro":a<1.75?"1 ano e meio":Math.round(a)+" anos inteiros"}
+const DEC={"Eu mesmo, sou o dono":"Eu decido","Eu e meu sócio, juntos":"Decido com meu sócio","Outra pessoa decide":"Quem decide é outra pessoa"};
+const INV={"Até R$ 300":"penso em investir até R$ 300","De R$ 300 a R$ 600":"penso em investir de R$ 300 a R$ 600","De R$ 600 a R$ 1.000":"penso em investir de R$ 600 a R$ 1.000","De R$ 1.000 a R$ 2.000":"penso em investir de R$ 1.000 a R$ 2.000","Mais de R$ 2.000":"penso em investir mais de R$ 2.000","Ainda não sei":"ainda não sei quanto investir"};
+const QDO={"O quanto antes":"quero resolver o quanto antes","Nos próximos meses":"quero resolver nos próximos meses","Só estou conhecendo":"por enquanto estou só conhecendo"};
+function msg(){
+  const q=S.qtd.replace("Até","até").replace("De","de").replace("Mais","mais");
+  const imp=S.tipo==="clientes"?"perco "+q.replace(" por mês"," clientes por mês")+" por causa disso":"me toma "+q.replace(" horas"," h")+" por semana";
+  const dor=S.dor.replace(/\s*\n+\s*/g," ").replace(/[*_]/g,"");
+  return "Oi, Gabriel! 👋 Sou *"+S.nome+"*, da *"+S.empresa+"*.\n"+
+   "Quero resolver isso: _"+dor+"_ ("+imp+").\n"+
+   (DEC[S.decide]||S.decide)+", "+(QDO[S.quando]||S.quando)+" e "+(INV[S.investir]||"ainda não sei quanto investir")+".";
+}
+const fmt=t=>esc(t).replace(/\*([^*\n]+)\*/g,"<b>$1</b>").replace(/_([^_\n]+)_/g,"<i>$1</i>").replace(/\n/g,"<br>");
+function head(st){return `<span class="cheer">${esc(st.c(first()))}</span><h2>${st.t}</h2>`}
+function lossHead(st){const p=perda();return `<span class="cheer">${esc(st.c(first()))}</span>
+  <div class="loss">${S.tipo==="clientes"
+    ?`<small>Só com isso, você perde por ano cerca de</small><strong><span id="hh">0</span> clientes</strong><span>Em 5 anos são <b>${(p.n*5).toLocaleString("pt-BR")} clientes</b> que foram pra outro lugar. 😳</span>
+    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto você ganha, em média, com 1 cliente? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0"></span></label>`
+    :`<small>Só com essa tarefa, você perde por ano</small><strong><span id="hh">0</span> horas</strong><span>Em 5 anos são <b>${(p.n*5).toLocaleString("pt-BR")} horas</b>: ${tempo5(p.n)} de trabalho, só nisso. 😳</span>
+    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto vale 1 hora sua? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0"></span></label>`}<b id="vhout" hidden></b></div>
+  <h2>${st.t}</h2>
+  <p>Toda solução vem com <b style="color:var(--fg)">uma tela sua, bonita e fácil de usar</b>, no celular e no computador. Quanto mais você investe, mais partes da empresa ela resolve.</p>`}
+function next(){i++;render()}
+function countUp(el,to,show=x=>x.toLocaleString("pt-BR")){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=show(to);return}
+  const t0=performance.now(),dur=1100;
+  (function frame(t){const k=Math.max(0,Math.min(1,(t-t0)/dur));el.textContent=show(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(frame)})(t0);
+  // Garantia: se o navegador pausar a animação (ex.: o do Instagram), o número final aparece mesmo assim.
+  setTimeout(()=>{el.textContent=show(to)},dur+100);
+}
+function render(){
+  const st=steps[i], el=$("step"), mid=i>0&&st.k!=="fim";
+  if(i>maxTela){maxTela=i;avisar({t:"passo",n:i})}
+  $("back").hidden=!mid; $("brand").hidden=mid; $("mid").hidden=i===0;
+  const done=st.k==="fim"?N:i-1;
+  $("ring").style.strokeDashoffset=C*(1-done/N);
+  $("clocktxt").textContent=st.k==="fim"?"🎉":"⏳";
+  $("count").textContent=st.k==="fim"?"":i+" de "+N;
+  el.style.animation="none"; el.offsetHeight; el.style.animation="";
+  if(st.k==="intro"){
+    el.innerHTML=`<div class="hello"><div class="avatar"><div>G</div>${foto()}</div><div><b>Oi, eu sou o Gabriel 👋</b><small>fundador da Automy</small></div></div>
+      <h1>Toda empresa tem aquela tarefa que <em>come o dia inteiro</em>.</h1>
+      <p class="lead">Me conta qual é a sua. Eu descubro onde o tempo escapa e construo o sistema que faz isso no seu lugar.</p>
+      <div class="facts"><span><i>⚡</i>7 perguntas</span><span><i>⏱️</i>1 minuto</span><span><i>🤝</i>Sem compromisso</span></div>
+      <div class="spacer"></div>
+      <button class="btn" id="go">Quero descobrir →</button>
+      <a class="link" href="${waDireto}" target="_blank" rel="noopener">Prefiro falar direto no WhatsApp</a>`;
+    $("go").onclick=next;
+    // Quem vai direto pro WhatsApp não desistiu: o CRM conta à parte.
+    el.querySelector("a.link").addEventListener("click",()=>{if(!foiDireto){foiDireto=true;avisar({t:"direto"})}});
+  } else if(st.k==="fim"){
+    const p=perda();
+    el.innerHTML=`<span class="cheer">Pronto, ${esc(first())}! 🎉</span>
+      <h2>Agora é só me <em>mandar</em> 👇</h2>
+      <div class="chat"><div class="chathead"><div class="avatar sm"><div>G</div>${foto()}</div><div><b>Gabriel · Automy</b><small>WhatsApp</small></div></div>
+        <div class="chatbody"><div class="bubble"><span id="prev"></span><span class="tm">agora ✓✓</span></div></div></div>
+      <ol class="how"><li>Toca no botão verde</li><li>O WhatsApp abre com essa mensagem pronta</li><li>É só apertar enviar ➤</li></ol>
+      <a class="btn wa" id="wa" target="_blank" rel="noopener">Mandar pro Gabriel no WhatsApp 💬</a>
+      <p class="hint">Quem responde sou eu, ${esc(first())}. 😉</p>
+      <p class="hint">🔒 Suas respostas ficam só comigo, pra eu te atender. Não repasso pra ninguém.</p>
+      <button class="link" id="again">Refazer as respostas</button>`;
+    $("prev").innerHTML=fmt(msg());
+    $("wa").href="https://wa.me/"+FONE+"?text="+encodeURIComponent(msg());
+    $("wa").addEventListener("click",()=>{if(enviado)return;enviado=true;avisar(Object.assign({t:"enviou"},S))});
+    $("again").onclick=()=>{i=1;render()};
+  } else if(st.k==="perda"){
+    el.innerHTML=head(st)+`<div class="opts grid">
+        <button class="opt" data-t="tempo" aria-pressed="${S.tipo==="tempo"}"><span class="e">⏳</span><span>Tempo<small>Me toma horas da semana</small></span></button>
+        <button class="opt" data-t="clientes" aria-pressed="${S.tipo==="clientes"}"><span class="e">💸</span><span>Clientes<small>Perco venda por causa disso</small></span></button></div>
+      <div id="qbox"></div><div class="spacer"></div>`;
+    const showQ=()=>{const q=Q[S.tipo];const box=$("qbox");
+      box.innerHTML=`<h3 class="qt">${q.t}</h3><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="${S.qtd===o[1]}"><span class="e">${o[0]}</span><span>${esc(o[1])}</span></button>`).join("")}</div>`;
+      box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{box.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");S.qtd=q.o[+b.dataset.j][1];setTimeout(next,200)});};
+    el.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
+      if(S.tipo!==b.dataset.t){S.tipo=b.dataset.t;S.qtd=""}
+      el.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+      showQ(); $("qbox").scrollIntoView({behavior:"smooth",block:"nearest"});
+    });
+    if(S.tipo) showQ();
+  } else if(st.o){
+    el.innerHTML=(st.loss?lossHead(st):head(st))+`<div class="opts ${st.grid?"grid":""}">${st.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="${S[st.k]===o[1]||(o[1]==="Outro"&&S[st.k]&&!st.o.some(x=>x[1]===S[st.k]))}"><span class="e">${o[0]}</span><span>${esc(o[1]).split("R$ ").join("R$&nbsp;")}${o[2]?`<small>${esc(o[2])}</small>`:""}${o[3]?`<small class="ex">${esc(o[3])}</small>`:""}</span></button>`).join("")}</div>
+      <div class="field" id="outro" hidden><label for="f-outro">Qual é o ramo?</label><input id="f-outro" maxlength="60" placeholder="Ex.: escola de inglês"></div>
+      <span class="err" id="err" hidden>Escreve o ramo pra continuar.</span>
+      <div class="spacer"></div><button class="btn" id="ok" hidden>Continuar →</button>
+      <p class="hint" id="hint">Toque numa opção</p>`;
+    el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const o=st.o[+b.dataset.j][1];
+      el.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
+      if(o==="Outro"){$("outro").hidden=false;$("ok").hidden=false;$("hint").hidden=true;$("f-outro").focus();return}
+      S[st.k]=o; setTimeout(next,200);
+    });
+    if(st.loss){const p=perda();countUp($("hh"),p.n);
+      $("f-vh").oninput=e=>{const v=parseInt(e.target.value.replace(/[^0-9]/g,""),10)||0;const o=$("vhout");o.hidden=!v;
+        if(v)o.textContent="Isso dá "+brl(p.n*v)+" por ano, e "+brl(p.n*5*v)+" em 5 anos."}}
+    if(st.k==="ramo"){
+      const go=()=>{const v=$("f-outro").value.trim();if(!v){$("err").hidden=false;return}S.ramo=v;next()};
+      $("ok").onclick=go; $("f-outro").onkeydown=e=>{if(e.key==="Enter")go()};
+      if(S.ramo&&!st.o.some(x=>x[1]===S.ramo)){$("outro").hidden=false;$("ok").hidden=false;$("hint").hidden=true;$("f-outro").value=S.ramo}
+    }
+  } else if(st.k==="nome"){
+    el.innerHTML=head(st)+`
+      <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" maxlength="60" autocomplete="given-name" placeholder="Ex.: Carlos" value="${esc(S.nome)}"></div>
+      <div class="field"><label for="f-emp">Nome da empresa</label><input id="f-emp" maxlength="80" placeholder="Ex.: Academia Força Total" value="${esc(S.empresa)}"></div>
+      <div class="hp" aria-hidden="true"><label for="f-hp">Deixe em branco</label><input id="f-hp" tabindex="-1" autocomplete="off"></div>
+      <span class="err" id="err" hidden>Preencha os dois pra continuar.</span>
+      <div class="spacer"></div><button class="btn" id="ok">Continuar →</button>`;
+    const go=()=>{const a=$("f-nome").value.trim(),b=$("f-emp").value.trim();
+      if(!a||!b){$("err").hidden=false;return}S.nome=a.replace(/[*_]/g,"");S.empresa=b.replace(/[*_]/g,"");S.hp=$("f-hp").value;next()};
+    $("ok").onclick=go; el.querySelectorAll("input").forEach(x=>x.onkeydown=e=>{if(e.key==="Enter")go()});
+  } else {
+    el.innerHTML=head(st)+`
+      <div class="field"><label for="f-dor">Do seu jeito, em poucas palavras</label><textarea id="f-dor" maxlength="600" placeholder="${esc(st.p)}">${esc(S.dor)}</textarea></div>
+      <span class="err" id="err" hidden>Escreve pelo menos uma frase, nem que seja curtinha.</span>
+      <div class="spacer"></div><button class="btn" id="ok">Continuar →</button>`;
+    $("ok").onclick=()=>{const v=$("f-dor").value.trim();if(!v){$("err").hidden=false;return}S.dor=v;next()};
+  }
+}
+$("back").onclick=()=>{if(i>0){i--;render()}};
+render();
+</script>
+</body>
+</html>
