@@ -160,8 +160,8 @@ function avisar(dados){
 }
 // A foto por cima do "G": se o arquivo não existir, a foto some e o "G" aparece.
 const foto=()=>FOTO?`<img src="${esc(FOTO)}" alt="Foto do Gabriel" onerror="this.remove()">`:"";
-const Q={tempo:{t:"Quantas horas por semana isso te toma, mais ou menos?",o:[["🙂","Até 2 horas",2],["😐","De 3 a 5 horas",4],["😩","De 6 a 10 horas",8],["🤯","Mais de 10 horas",12]]},
- clientes:{t:"Quantos clientes você perde por mês por causa disso?",o:[["😕","1 ou 2 por mês",2],["😟","De 3 a 5 por mês",4],["😩","De 6 a 10 por mês",8],["🤯","Mais de 10 por mês",12]]}};
+const Q={tempo:{t:"Quantas horas por semana isso te toma, mais ou menos?",o:[["🙂","Até 2 horas",1],["😐","De 3 a 5 horas",4],["😩","De 6 a 10 horas",8],["🤯","Mais de 10 horas",12]]},
+ clientes:{t:"Quantos clientes você perde por mês por causa disso?",o:[["😕","1 ou 2 por mês",1.5],["😟","De 3 a 5 por mês",4],["😩","De 6 a 10 por mês",8],["🤯","Mais de 10 por mês",12]]}};
 const steps=[
  {k:"intro"},
  {k:"nome",c:()=>"Bora começar! 🚀",t:"Como você se chama, e qual o nome da sua empresa?"},
@@ -187,7 +187,7 @@ const waDireto="https://wa.me/"+FONE+"?text="+encodeURIComponent("Oi, Gabriel! V
 $("ring").style.strokeDasharray=C;
 const brl=n=>"R$ "+Math.round(n).toLocaleString("pt-BR");
 function perda(){const q=Q[S.tipo]||Q.tempo;const it=q.o.find(o=>o[1]===S.qtd);const v=it?it[2]:0;const n=S.tipo==="clientes"?v*12:v*52;return{n,h:n,d:Math.round(n/8)}}
-function tempo5(h){const m=Math.round(h*5/8/22);if(m<12)return "uns "+m+" meses inteiros";const a=m/12;return a<1.25?"1 ano inteiro":a<1.75?"1 ano e meio":Math.round(a)+" anos inteiros"}
+function tempo5(h){const x=h*5/8/22,m=Math.round(x);if(x<1.25)return "1 mês inteiro";if(x<1.75)return "1 mês e meio";if(m<12)return "uns "+m+" meses inteiros";const a=m/12;return a<1.25?"1 ano inteiro":a<1.75?"1 ano e meio":Math.round(a)+" anos inteiros"}
 const DEC={"Eu mesmo, sou o dono":"Eu decido","Eu e meu sócio, juntos":"Decido com meu sócio","Outra pessoa decide":"Quem decide é outra pessoa"};
 const INV={"Até R$ 300":"penso em investir até R$ 300","De R$ 300 a R$ 600":"penso em investir de R$ 300 a R$ 600","De R$ 600 a R$ 1.000":"penso em investir de R$ 600 a R$ 1.000","De R$ 1.000 a R$ 2.000":"penso em investir de R$ 1.000 a R$ 2.000","Mais de R$ 2.000":"penso em investir mais de R$ 2.000","Ainda não sei":"ainda não sei quanto investir"};
 const QDO={"O quanto antes":"quero resolver o quanto antes","Nos próximos meses":"quero resolver nos próximos meses","Só estou conhecendo":"por enquanto estou só conhecendo"};
