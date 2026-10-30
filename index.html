@@ -114,6 +114,8 @@ details .bubble{margin-top:10px}
 .avatar img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;object-fit:cover;border:3px solid var(--ink);box-sizing:border-box}
 .avatar.sm img{inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);border-width:2px}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+/* "hidden" sempre vence: sem isto, .field e .btn (display:flex/block) aparecem mesmo escondidos */
+[hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.step,.btn.wa,.cheer,.opt[aria-pressed="true"]{animation:none}.clock .val,.opt,.btn{transition:none}}
 </style>
 </head>
