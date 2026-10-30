@@ -144,7 +144,7 @@ const FONE="5588981191444";
 const CRM_URL="https://script.google.com/macros/s/AKfycbyoMJE3Gcn6geR5N3nAZ2XXPwNZPRZZrW_w6FJE6suTBGTzG4iQNRy7to2v5_jAwkOX/exec";
 // Foto do Gabriel: arquivo "foto.jpg" ao lado desta página. Sem o arquivo, aparece o "G".
 const FOTO="foto.jpg";
-const S={nome:"",empresa:"",ramo:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",hp:""};
+const S={nome:"",empresa:"",ramo:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",vh:"",hp:""};
 
 // ---- avisos para o CRM ----
 // Cada visita ganha um código sorteado (não diz quem é). O CRM usa para
@@ -204,9 +204,9 @@ function head(st){return `<span class="cheer">${esc(st.c(first()))}</span><h2>${
 function lossHead(st){const p=perda();return `<span class="cheer">${esc(st.c(first()))}</span>
   <div class="loss">${S.tipo==="clientes"
     ?`<small>Só com isso, você perde por ano cerca de</small><strong><span id="hh">0</span> clientes</strong><span>Em 5 anos são <b>${(p.n*5).toLocaleString("pt-BR")} clientes</b> que foram pra outro lugar. 😳</span>
-    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto você ganha, em média, com 1 cliente? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0"></span></label>`
+    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto você ganha, em média, com 1 cliente? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0" value="${esc(S.vh)}"></span></label>`
     :`<small>Só com essa tarefa, você perde por ano</small><strong><span id="hh">0</span> horas</strong><span>Em 5 anos são <b>${(p.n*5).toLocaleString("pt-BR")} horas</b>: ${tempo5(p.n)} de trabalho, só nisso. 😳</span>
-    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto vale 1 hora sua? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0"></span></label>`}<b id="vhout" hidden></b></div>
+    <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto vale 1 hora sua? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0" value="${esc(S.vh)}"></span></label>`}<b id="vhout" hidden></b></div>
   <h2>${st.t}</h2>
   <p>Toda solução vem com <b style="color:var(--fg)">uma tela sua, bonita e fácil de usar</b>, no celular e no computador. Quanto mais você investe, mais partes da empresa ela resolve.</p>`}
 function next(){i++;render()}
@@ -261,7 +261,7 @@ function render(){
       box.innerHTML=`<h3 class="qt">${q.t}</h3><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="${S.qtd===o[1]}"><span class="e">${o[0]}</span><span>${esc(o[1])}</span></button>`).join("")}</div>`;
       box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{box.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");S.qtd=q.o[+b.dataset.j][1];setTimeout(next,200)});};
     el.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{
-      if(S.tipo!==b.dataset.t){S.tipo=b.dataset.t;S.qtd=""}
+      if(S.tipo!==b.dataset.t){S.tipo=b.dataset.t;S.qtd="";S.vh=""}
       el.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
       showQ(); $("qbox").scrollIntoView({behavior:"smooth",block:"nearest"});
     });
@@ -279,8 +279,9 @@ function render(){
       S[st.k]=o; setTimeout(next,200);
     });
     if(st.loss){const p=perda();countUp($("hh"),p.n);
-      $("f-vh").oninput=e=>{const v=parseInt(e.target.value.replace(/[^0-9]/g,""),10)||0;const o=$("vhout");o.hidden=!v;
-        if(v)o.textContent="Isso dá "+brl(p.n*v)+" por ano, e "+brl(p.n*5*v)+" em 5 anos."}}
+      $("f-vh").oninput=e=>{const v=parseInt(e.target.value.replace(/[^0-9]/g,""),10)||0;S.vh=v?String(v):"";const o=$("vhout");o.hidden=!v;
+        if(v)o.textContent="Isso dá "+brl(p.n*v)+" por ano, e "+brl(p.n*5*v)+" em 5 anos."};
+      if(S.vh)$("f-vh").oninput({target:$("f-vh")})}
     if(st.k==="ramo"){
       const go=()=>{const v=$("f-outro").value.trim();if(!v){$("err").hidden=false;return}S.ramo=v;next()};
       $("ok").onclick=go; $("f-outro").onkeydown=e=>{if(e.key==="Enter")go()};
