@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Automy · Onde sua empresa perde tempo?</title>
-<meta name="description" content="7 perguntas, 1 minuto. Descubra quanto sua empresa perde por ano e fale direto com o Gabriel, da Automy.">
+<meta name="description" content="6 perguntas, 1 minuto. Descubra quanto sua empresa perde por ano e fale direto com o Gabriel, da Automy.">
 <meta property="og:title" content="Onde sua empresa perde tempo?">
-<meta property="og:description" content="7 perguntas, 1 minuto. Sem compromisso.">
+<meta property="og:description" content="6 perguntas, 1 minuto. Sem compromisso.">
 <meta name="theme-color" content="#121a52">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
@@ -31,7 +33,7 @@ body{margin:0;background:var(--ink);color:var(--fg);font-family:var(--body);font
   box-shadow:0 30px 80px -30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;gap:20px;overflow:hidden}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
 .brand{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
-.brand i{width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 14px var(--amber)}
+.brand img{height:24px;width:auto;display:block}
 .back{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;padding:6px 0}
 .mid{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .clock{position:relative;width:44px;height:44px;flex:none}
@@ -124,7 +126,7 @@ details .bubble{margin-top:10px}
 <main class="card">
   <div class="top">
     <button class="back" id="back" hidden>← Voltar</button>
-    <span class="brand" id="brand"><i></i>Automy</span>
+    <span class="brand" id="brand"><img src="logo.svg" alt="Automy"></span>
     <div class="mid" id="mid" hidden>
       <span id="count"></span>
       <div class="clock" aria-hidden="true">
@@ -144,7 +146,7 @@ const FONE="5588981191444";
 const CRM_URL="https://script.google.com/macros/s/AKfycbyoMJE3Gcn6geR5N3nAZ2XXPwNZPRZZrW_w6FJE6suTBGTzG4iQNRy7to2v5_jAwkOX/exec";
 // Foto do Gabriel: arquivo "foto.jpg" ao lado desta página. Sem o arquivo, aparece o "G".
 const FOTO="foto.jpg";
-const S={nome:"",empresa:"",ramo:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",vh:"",hp:""};
+const S={nome:"",empresa:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",vh:"",hp:""};
 
 // ---- avisos para o CRM ----
 // Cada visita ganha um código sorteado (não diz quem é). O CRM usa para
@@ -165,9 +167,7 @@ const Q={tempo:{t:"Quantas horas por semana isso te toma, mais ou menos?",o:[["�
 const steps=[
  {k:"intro"},
  {k:"nome",c:()=>"Bora começar! 🚀",t:"Como você se chama, e qual o nome da sua empresa?"},
- {k:"ramo",c:n=>`Prazer, ${n}! 👋`,t:"Qual é o ramo da sua empresa?",grid:true,
-  o:[["🛍️","Comércio / loja"],["💆","Saúde ou estética"],["🏋️","Academia ou esporte"],["🍔","Alimentação"],["🧰","Serviços"],["✍️","Outro"]]},
- {k:"dor",c:n=>`Agora a mais importante, ${n} 💬`,t:"O que mais <em>toma o seu tempo</em> ou dá dor de cabeça hoje?",p:"Ex.: controlar quem pagou e quem tá devendo, fechar o caixa do mês na mão, responder orçamento um por um no WhatsApp, juntar pedido que chega de 3 lugares diferentes…"},
+ {k:"dor",c:n=>`Prazer, ${n}! Agora a mais importante 💬`,t:"O que mais <em>toma o seu tempo</em> ou dá dor de cabeça hoje?",p:"Ex.: controlar quem pagou e quem tá devendo, fechar o caixa do mês na mão, responder orçamento um por um no WhatsApp, juntar pedido que chega de 3 lugares diferentes…"},
  {k:"perda",c:()=>"Isso tem cara de prejuízo… 😬",t:"O que isso mais te faz <em>perder</em>?"},
  {k:"decide",c:n=>`Tá dando certo, ${n}! 💪 Faltam só duas`,t:"Na hora de decidir, quem bate o martelo?",
   o:[["👑","Eu mesmo, sou o dono"],["🤝","Eu e meu sócio, juntos"],["🙋","Outra pessoa decide"]]},
@@ -230,7 +230,7 @@ function render(){
     el.innerHTML=`<div class="hello"><div class="avatar"><div>G</div>${foto()}</div><div><b>Oi, eu sou o Gabriel 👋</b><small>fundador da Automy</small></div></div>
       <h1>Toda empresa tem aquela tarefa que <em>come o dia inteiro</em>.</h1>
       <p class="lead">Me conta qual é a sua. Eu descubro onde o tempo escapa e construo o sistema que faz isso no seu lugar.</p>
-      <div class="facts"><span><i>⚡</i>7 perguntas</span><span><i>⏱️</i>1 minuto</span><span><i>🤝</i>Sem compromisso</span></div>
+      <div class="facts"><span><i>⚡</i>6 perguntas</span><span><i>⏱️</i>1 minuto</span><span><i>🤝</i>Sem compromisso</span></div>
       <div class="spacer"></div>
       <button class="btn" id="go">Quero descobrir →</button>
       <a class="link" href="${waDireto}" target="_blank" rel="noopener">Prefiro falar direto no WhatsApp</a>`;
@@ -267,26 +267,18 @@ function render(){
     });
     if(S.tipo) showQ();
   } else if(st.o){
-    el.innerHTML=(st.loss?lossHead(st):head(st))+`<div class="opts ${st.grid?"grid":""}">${st.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="${S[st.k]===o[1]||(o[1]==="Outro"&&S[st.k]&&!st.o.some(x=>x[1]===S[st.k]))}"><span class="e">${o[0]}</span><span>${esc(o[1]).split("R$ ").join("R$&nbsp;")}${o[2]?`<small>${esc(o[2])}</small>`:""}${o[3]?`<small class="ex">${esc(o[3])}</small>`:""}</span></button>`).join("")}</div>
-      <div class="field" id="outro" hidden><label for="f-outro">Qual é o ramo?</label><input id="f-outro" maxlength="60" placeholder="Ex.: escola de inglês"></div>
-      <span class="err" id="err" hidden>Escreve o ramo pra continuar.</span>
-      <div class="spacer"></div><button class="btn" id="ok" hidden>Continuar →</button>
-      <p class="hint" id="hint">Toque numa opção</p>`;
+    el.innerHTML=(st.loss?lossHead(st):head(st))+`<div class="opts ${st.grid?"grid":""}">${st.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="${S[st.k]===o[1]}"><span class="e">${o[0]}</span><span>${esc(o[1]).split("R$ ").join("R$&nbsp;")}${o[2]?`<small>${esc(o[2])}</small>`:""}${o[3]?`<small class="ex">${esc(o[3])}</small>`:""}</span></button>`).join("")}</div>
+      <div class="spacer"></div>
+      <p class="hint">Toque numa opção</p>`;
     el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
       const o=st.o[+b.dataset.j][1];
       el.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");
-      if(o==="Outro"){$("outro").hidden=false;$("ok").hidden=false;$("hint").hidden=true;$("f-outro").focus();return}
       S[st.k]=o; setTimeout(next,200);
     });
     if(st.loss){const p=perda();countUp($("hh"),p.n);
       $("f-vh").oninput=e=>{const v=parseInt(e.target.value.replace(/[^0-9]/g,""),10)||0;S.vh=v?String(v):"";const o=$("vhout");o.hidden=!v;
         if(v)o.textContent="Isso dá "+brl(p.n*v)+" por ano, e "+brl(p.n*5*v)+" em 5 anos."};
       if(S.vh)$("f-vh").oninput({target:$("f-vh")})}
-    if(st.k==="ramo"){
-      const go=()=>{const v=$("f-outro").value.trim();if(!v){$("err").hidden=false;return}S.ramo=v;next()};
-      $("ok").onclick=go; $("f-outro").onkeydown=e=>{if(e.key==="Enter")go()};
-      if(S.ramo&&!st.o.some(x=>x[1]===S.ramo)){$("outro").hidden=false;$("ok").hidden=false;$("hint").hidden=true;$("f-outro").value=S.ramo}
-    }
   } else if(st.k==="nome"){
     el.innerHTML=head(st)+`
       <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" maxlength="60" autocomplete="given-name" placeholder="Ex.: Carlos" value="${esc(S.nome)}"></div>
