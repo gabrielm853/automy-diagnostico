@@ -141,9 +141,9 @@ details .bubble{margin-top:10px}
 
 <script>
 const FONE="5588981191444";
-// Endereço do CRM (Apps Script → Implantar → app da Web, termina em /exec).
-// Vazio = a página funciona igual, só não avisa o CRM.
-const CRM_URL="https://script.google.com/macros/s/AKfycbyoMJE3Gcn6geR5N3nAZ2XXPwNZPRZZrW_w6FJE6suTBGTzG4iQNRy7to2v5_jAwkOX/exec";
+// Endereço do CRM (Supabase Edge Function). Vazio = a página funciona
+// igual, só não avisa o CRM.
+const CRM_URL="https://czzqvzrslpfbtxknouzl.supabase.co/functions/v1/crm";
 // Foto do Gabriel: arquivo "foto.jpg" ao lado desta página. Sem o arquivo, aparece o "G".
 const FOTO="foto.jpg";
 const S={nome:"",tel:"",dor:"",tipo:"",qtd:"",decide:"",quando:"",investir:"",vh:"",hp:""};
@@ -156,7 +156,9 @@ let sessao=novoCodigo();
 let maxTela=-1, enviado=false, foiDireto=false;
 function avisar(dados){
   if(!CRM_URL)return;
-  const corpo=JSON.stringify(Object.assign({s:sessao},dados));
+  // acao:"questionario" é como a Edge Function distingue isto (porta
+  // pública, sem senha) das chamadas do CRM (que exigem senha).
+  const corpo=JSON.stringify({acao:"questionario",dado:Object.assign({s:sessao},dados)});
   // sendBeacon entrega mesmo se a pessoa sair da página logo em seguida.
   try{if(navigator.sendBeacon&&navigator.sendBeacon(CRM_URL,corpo))return}catch(e){}
   fetch(CRM_URL,{method:"POST",mode:"no-cors",keepalive:true,body:corpo}).catch(()=>{});
@@ -164,7 +166,7 @@ function avisar(dados){
 // A foto por cima do "G": se o arquivo não existir, a foto some e o "G" aparece.
 const foto=()=>FOTO?`<img src="${esc(FOTO)}" alt="Foto do Gabriel" onerror="this.remove()">`:"";
 const Q={tempo:{t:"Quanto tempo por dia isso te toma, mais ou menos?",o:[["🙂","Até 30 min",0.25],["😐","De 30 min a 1 hora",0.75],["😩","De 1 a 2 horas",1.5],["🤯","Mais de 2 horas",2.5]]},
- clientes:{t:"Quantos clientes você perde por mês por causa disso?",o:[["😕","1 ou 2 por mês",1.5],["😟","De 3 a 5 por mês",4],["😩","De 6 a 10 por mês",8],["🤯","Mais de 10 por mês",12]]}};
+ clientes:{t:"Quantos clientes você perde por semana por causa disso?",o:[["😕","1 a 2 por semana",1.5],["😟","De 3 a 5 por semana",4],["😩","De 6 a 9 por semana",7.5],["🤯","10 ou mais por semana",12]]}};
 const steps=[
  {k:"intro"},
  {k:"nome",c:()=>"Bora começar! 🚀",t:"Como você se chama, e qual o seu WhatsApp?"},
@@ -187,14 +189,14 @@ const first=()=>S.nome.trim().split(/\s+/)[0]||"";
 const waDireto="https://wa.me/"+FONE+"?text="+encodeURIComponent("Oi, Gabriel! Vi seu Instagram e queria conversar sobre a minha empresa.");
 $("ring").style.strokeDasharray=C;
 const brl=n=>"R$ "+Math.round(n).toLocaleString("pt-BR");
-function perda(){const q=Q[S.tipo]||Q.tempo;const it=q.o.find(o=>o[1]===S.qtd);const v=it?it[2]:0;const n=S.tipo==="clientes"?v*12:Math.round(v*260);return{n,h:n,d:Math.round(n/8)}}
+function perda(){const q=Q[S.tipo]||Q.tempo;const it=q.o.find(o=>o[1]===S.qtd);const v=it?it[2]:0;const n=S.tipo==="clientes"?Math.round(v*52):Math.round(v*260);return{n,h:n,d:Math.round(n/8)}}
 function tempo5(h){const x=h*5/8/22,m=Math.round(x);if(x<1.25)return "1 mês inteiro";if(x<1.75)return "1 mês e meio";if(m<12)return "uns "+m+" meses inteiros";const a=m/12;return a<1.25?"1 ano inteiro":a<1.75?"1 ano e meio":Math.round(a)+" anos inteiros"}
 const DEC={"Eu mesmo, sou o dono":"Eu decido","Eu e meu sócio, juntos":"Decido com meu sócio","Outra pessoa decide":"Quem decide é outra pessoa"};
 const INV={"Até R$ 300":"penso em investir até R$ 300","De R$ 300 a R$ 600":"penso em investir de R$ 300 a R$ 600","De R$ 600 a R$ 1.000":"penso em investir de R$ 600 a R$ 1.000","De R$ 1.000 a R$ 2.000":"penso em investir de R$ 1.000 a R$ 2.000","Mais de R$ 2.000":"penso em investir mais de R$ 2.000","Ainda não sei":"ainda não sei quanto investir"};
 const QDO={"O quanto antes":"quero resolver o quanto antes","Nos próximos meses":"quero resolver nos próximos meses","Só estou conhecendo":"por enquanto estou só conhecendo"};
 function msg(){
   const q=S.qtd.replace("Até","até").replace("De","de").replace("Mais","mais");
-  const imp=S.tipo==="clientes"?"perco "+q.replace(" por mês"," clientes por mês")+" por causa disso":"me toma "+q+" por dia";
+  const imp=S.tipo==="clientes"?"perco "+q.replace(" por semana"," clientes por semana")+" por causa disso":"me toma "+q+" por dia";
   const dor=S.dor.replace(/\s*\n+\s*/g," ").replace(/[*_]/g,"");
   return "Oi, Gabriel! 👋 Sou *"+S.nome+"*.\n"+
    "Quero resolver isso: _"+dor+"_ ("+imp+").\n"+

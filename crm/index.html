@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM Automy</title>
+<link rel="icon" href="https://gabrielm853.github.io/automy-diagnostico/icone-crm.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  /* CRM Automy v3: abas Início · Vendas · Clientes · Questionário.
+     Mesma família visual do app de Finanças. */
+  :root {
+    --fundo: #0B0D10; --cartao: #15181D; --cartao2: #1C2027; --linha: rgba(255,255,255,0.07);
+    --texto: #F3F4F6; --suave: #C9CDD4; --fraco: #9AA1AD;
+    --verde: #6EE7A0; --azul: #A9C1FF; --ambar: #F7B84B; --vermelho: #FF7A7A; --rosa: #F9A8D4; --lilas: #C4B5FD;
+    --aviso: #FDE047; --wpp: #25C26A;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: var(--fundo); color: var(--texto); min-height: 100vh;
+    font: 14px/1.4 'Plus Jakarta Sans', system-ui, sans-serif; font-variant-numeric: tabular-nums;
+    background-image: radial-gradient(60% 40% at 100% 0, rgba(110,231,160,.07), transparent 70%),
+                      radial-gradient(50% 40% at 0 0, rgba(169,193,255,.06), transparent 70%); }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  /* "hidden" sempre vence, mesmo em caixa com display próprio. */
+  [hidden] { display: none !important; }
+  .pequeno { font-size: 12px; color: var(--fraco); }
+  .espaco { flex: 1; }
+  @keyframes entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .app { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 18px; max-width: 1800px; margin: 0 auto; }
+  .tela { display: flex; flex-direction: column; gap: 16px; animation: entra .3s ease-out; }
+
+  /* ---------- topo e abas ---------- */
+  .topo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .logo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 800;
+    background: linear-gradient(135deg, var(--verde), var(--azul)); color: #0B0D10; flex: none; }
+  .titulo { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+  .selo { font-size: 10px; font-weight: 800; letter-spacing: .08em; color: var(--ambar); padding: 3px 8px; border-radius: 999px; background: rgba(247,184,75,.12); }
+  .abas { display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: var(--cartao); border: 1px solid var(--linha); margin-left: 12px; }
+  .aba { padding: 9px 16px; border-radius: 12px; font-weight: 700; color: var(--fraco); display: flex; align-items: center; gap: 7px; transition: background .2s, color .2s; }
+  .aba:hover { color: var(--texto); }
+  .aba.on { background: var(--cartao2); color: var(--texto); box-shadow: inset 0 0 0 1px var(--linha); }
+  .aba .n { font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 999px; background: rgba(247,184,75,.18); color: var(--ambar); }
+  .aba .n:empty { display: none; }
+  .busca { display: flex; align-items: center; gap: 8px; width: 240px; padding: 10px 14px; border-radius: 14px;
+    background: var(--cartao); border: 1px solid var(--linha); color: var(--fraco); }
+  .busca input { flex: 1; min-width: 0; background: none; border: 0; outline: none; height: auto; padding: 0; }
+  .tecla { font-size: 11px; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--linha); }
+  .botao { padding: 10px 15px; border-radius: 14px; background: var(--cartao); border: 1px solid var(--linha); font-weight: 700;
+    transition: background .2s, transform .12s; text-decoration: none; text-align: center; }
+  .botao:hover { background: var(--cartao2); }
+  .botao:active { transform: scale(.96); }
+  .botao.verde { background: var(--verde); color: #0B0D10; border-color: transparent; }
+  .botao.azul { background: var(--azul); color: #0B0D10; border-color: transparent; }
+  .botao.wpp { background: var(--wpp); color: #04210f; border-color: transparent; }
+  .botao.grande { width: 100%; padding: 15px; border-radius: 18px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .botao:disabled { opacity: .5; }
+
+  /* ---------- peças comuns ---------- */
+  .bloco { background: var(--cartao); border: 1px solid var(--linha); border-radius: 22px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .bloco-titulo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; }
+  .bloco-titulo .pequeno { margin-left: auto; font-weight: 500; }
+  .kpi strong { font-size: 28px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+  .tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.06); color: var(--fraco); white-space: nowrap; }
+  .tag.hoje { background: rgba(247,184,75,.15); color: var(--ambar); }
+  .tag.atrasado { background: rgba(255,122,122,.15); color: var(--vermelho); }
+  .tag.frio { background: rgba(253,224,71,.16); color: var(--aviso); }
+  .tag.quest { background: rgba(196,181,253,.14); color: var(--lilas); }
+  .tag.ok { background: rgba(110,231,160,.14); color: var(--verde); }
+  .tag.niver { background: rgba(249,168,212,.14); color: var(--rosa); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #0B0D10; }
+  .nome { font-weight: 700; line-height: 1.2; }
+  .emp { font-size: 12px; color: var(--fraco); font-weight: 500; }
+  .vazio { text-align: center; color: var(--fraco); padding: 22px 10px; font-size: 13px; }
+  .vazio .grande { font-size: 28px; margin-bottom: 6px; }
+  .grupo { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--fraco); padding: 4px 2px 0; }
+  .lista-v { display: flex; flex-direction: column; gap: 8px; }
+  .linha-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; background: var(--cartao2); border: 1px solid var(--linha); cursor: pointer; transition: transform .15s; }
+  .linha-item:hover { transform: translateX(3px); }
+  .linha-item .meio { flex: 1; min-width: 0; }
+  .sub { font-size: 12px; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .valor-dir { font-weight: 800; white-space: nowrap; }
+  .mini-wpp { font-size: 12px; font-weight: 700; padding: 5px 9px; border-radius: 10px; background: rgba(37,194,106,.14); color: var(--wpp); white-space: nowrap; }
+  .mini-wpp:hover { background: rgba(37,194,106,.26); }
+
+  /* ---------- INÍCIO ---------- */
+  .inicio { display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 16px; align-items: start; }
+  .coluna-v { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .meta { flex-direction: row; align-items: center; gap: 18px; cursor: pointer; transition: border-color .2s; }
+  .meta:hover { border-color: rgba(110,231,160,.35); }
+  .meta > div:last-child { display: flex; flex-direction: column; gap: 2px; }
+  .anel { position: relative; width: 96px; height: 96px; flex: none; }
+  .anel svg { transform: rotate(-90deg); }
+  .anel circle { fill: none; stroke-width: 9; }
+  .anel .trilho { stroke: var(--cartao2); }
+  .anel .valor { stroke: url(#gradMeta); stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.3,.8,.2,1); }
+  .anel span { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 19px; }
+  .editar-meta { font-size: 11px; font-weight: 700; color: var(--verde); }
+  .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tarefa { display: flex; align-items: flex-start; gap: 10px; padding: 11px; border-radius: 14px; background: var(--cartao2);
+    border: 1px solid var(--linha); transition: opacity .3s, transform .3s; }
+  .tarefa.feita { opacity: 0; transform: translateX(30px); }
+  .check { width: 24px; height: 24px; flex: none; border-radius: 8px; border: 2px solid var(--fraco); display: grid; place-items: center; margin-top: 2px; transition: background .2s, border-color .2s; }
+  .check:hover { border-color: var(--verde); }
+  .tarefa.marcada .check { background: var(--verde); border-color: var(--verde); }
+  .tarefa.marcada .check::after { content: '✓'; color: #0B0D10; font-weight: 800; font-size: 14px; }
+  .tarefa .meio { flex: 1; min-width: 0; cursor: pointer; }
+  .tarefa .prox { font-size: 13px; color: var(--suave); }
+  .tarefa .lado { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .depois { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+  .depois button, .depois label { font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px; background: rgba(110,231,160,.12); color: var(--verde); cursor: pointer; position: relative; }
+  .depois input[type=date] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; cursor: pointer; }
+
+  /* ---------- VENDAS ---------- */
+  .seg { display: flex; align-self: flex-start; background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 4px; gap: 4px; }
+  .seg button { padding: 7px 14px; border-radius: 10px; color: var(--fraco); font-size: 13px; font-weight: 700; }
+  .seg button.on { background: var(--cartao2); color: var(--texto); }
+  .quadro { position: relative; display: grid; grid-template-columns: repeat(5, minmax(210px, 1fr)); gap: 14px; align-items: start; }
+  .coluna { background: rgba(21,24,29,.75); border: 1px solid var(--linha); border-top: 3px solid var(--cor); border-radius: 22px; padding: 12px;
+    min-height: 480px; display: flex; flex-direction: column; gap: 10px; transition: background .2s, border-color .2s; }
+  .coluna.alvo { background: rgba(255,255,255,.04); border-color: var(--cor); }
+  .col-topo { display: flex; align-items: center; gap: 8px; padding: 4px 4px 0; }
+  .col-topo b { font-size: 15px; color: var(--cor); }
+  .conta { margin-left: auto; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--cartao2); }
+  .col-info { display: flex; justify-content: space-between; gap: 6px; padding: 0 4px 2px; font-size: 12px; color: var(--fraco); }
+  .col-conv { font-weight: 700; color: var(--suave); }
+  .col-conv.baixo { color: var(--vermelho); }
+  .coluna-vazia { color: var(--fraco); font-size: 12px; text-align: center; padding: 18px 8px; border: 1px dashed #3A404B; border-radius: 14px; }
+  /* A faixa "Perdi" só aparece enquanto um cliente é arrastado. */
+  .zona-perdido { display: none; position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(520px, 90vw); height: 72px;
+    align-items: center; justify-content: center; border: 2px dashed var(--vermelho); border-radius: 18px;
+    background: rgba(30,14,16,.95); color: var(--vermelho); font-weight: 800; z-index: 5; }
+  body.arrastando .zona-perdido { display: flex; }
+  .zona-perdido.alvo { background: rgba(60,20,24,.98); }
+  .cartao { background: var(--cartao2); border: 1px solid var(--linha); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 7px;
+    cursor: grab; transition: transform .15s, box-shadow .15s, opacity .2s; animation: entra .3s ease-out; }
+  .cartao:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -14px rgba(0,0,0,.8); }
+  .cartao.arrastando { opacity: .35; }
+  .c-linha1 { display: flex; align-items: center; gap: 9px; }
+  .c-prox { font-size: 13px; color: var(--suave); }
+  .c-rodape { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .c-valor { margin-left: auto; font-weight: 800; font-size: 13px; }
+  .acoes { display: flex; gap: 6px; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .2s, opacity .2s, margin .2s; }
+  .cartao:hover .acoes, .cartao:focus-within .acoes { max-height: 40px; opacity: 1; margin-top: 2px; }
+  @media (hover: none) { .acoes { max-height: 40px; opacity: 1; margin-top: 2px; } }
+  .acao { flex: 1; padding: 7px 0; border-radius: 10px; background: rgba(255,255,255,.06); font-size: 12px; font-weight: 700; }
+  .acao:hover { background: rgba(255,255,255,.12); }
+  .tabela { overflow: auto; background: var(--cartao); border: 1px solid var(--linha); border-radius: 22px; }
+  .tabela table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tabela th { position: sticky; top: 0; background: #181b21; text-align: left; font-size: 12px; color: var(--fraco); font-weight: 700; padding: 14px 16px; border-bottom: 1px solid var(--linha); }
+  .tabela td { padding: 12px 16px; border-bottom: 1px solid var(--linha); vertical-align: middle; }
+  .tabela tbody tr { cursor: pointer; transition: background .15s; }
+  .tabela tbody tr:hover { background: #1b1f27; }
+  .tabela .num { text-align: right; font-weight: 800; }
+  .etapa-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800;
+    color: var(--cor); background: color-mix(in srgb, var(--cor) 15%, transparent); white-space: nowrap; }
+
+  /* ---------- CLIENTES ---------- */
+  .clientes { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .cliente { gap: 12px; }
+  .cl-topo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .cl-topo .valor-dir { margin-left: auto; font-size: 18px; }
+  .pagto { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metade { border-radius: 14px; padding: 10px 12px; background: var(--cartao2); border: 1px solid var(--linha); display: flex; flex-direction: column; gap: 4px; }
+  .metade.paga { border-color: rgba(110,231,160,.35); background: rgba(110,231,160,.06); }
+  .metade b { font-size: 15px; }
+  .metade button, .marco button, .marco label { align-self: flex-start; font-size: 12px; font-weight: 700; padding: 5px 9px; border-radius: 10px; background: rgba(255,255,255,.07); cursor: pointer; position: relative; }
+  .metade button:hover { background: rgba(110,231,160,.2); }
+  .marco input[type=date] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; padding: 0; cursor: pointer; }
+  .barra-pg { height: 6px; border-radius: 3px; background: var(--cartao2); overflow: hidden; }
+  .barra-pg i { display: block; height: 100%; background: var(--verde); transition: width .5s; }
+  .marcos { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .marco { display: flex; align-items: center; gap: 8px; }
+  .marco .ic { width: 22px; text-align: center; }
+  .marco .tag, .marco label, .marco button { margin-left: auto; }
+  .cl-acoes { display: flex; gap: 8px; }
+  .cl-acoes button { flex: 1; padding: 9px 10px; border-radius: 12px; background: rgba(255,255,255,.06); font-size: 12px; font-weight: 700; }
+  .cl-acoes button:hover { background: rgba(255,255,255,.12); }
+
+  /* ---------- QUESTIONÁRIO ---------- */
+  .quest { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
+  .q-linha { display: grid; grid-template-columns: 170px 1fr 90px; align-items: center; gap: 14px; padding: 8px 6px; border-top: 1px solid var(--linha); }
+  .q-barra { height: 12px; border-radius: 6px; background: var(--cartao2); overflow: hidden; }
+  .q-barra i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--ambar), #ff8a3d); transition: width .8s; }
+  .q-linha.fim .q-barra i { background: var(--verde); }
+  .q-linha.pior { background: rgba(255,122,122,.07); border-radius: 10px; }
+  .q-num { text-align: right; font-weight: 800; }
+  .q-num small { color: var(--fraco); font-weight: 500; }
+
+  /* ---------- janelas (ficha, cadastro, mensagem, meta) ---------- */
+  dialog { border: 1px solid var(--linha); padding: 0; margin: auto; width: calc(100% - 24px); max-width: 520px; max-height: 88vh;
+    background: var(--cartao); color: var(--texto); border-radius: 26px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+  dialog[open] { animation: entra .22s ease-out; }
+  dialog::backdrop { background: rgba(0,0,0,.6); }
+  .folha { padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .folha h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+  .folha h3 { margin: 6px 0 -6px; font-size: 12px; font-weight: 800; color: var(--fraco); letter-spacing: .05em; text-transform: uppercase; }
+  .rotulo { font-size: 12px; color: var(--fraco); margin-bottom: 8px; font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { min-height: 36px; padding: 0 13px; border-radius: 999px; border: 1px solid #262B33; color: var(--suave); font-size: 13px; font-weight: 600; }
+  .chip.on { background: var(--azul); border-color: var(--azul); color: var(--fundo); }
+  .chip.perigo.on { background: var(--vermelho); border-color: var(--vermelho); }
+  input, textarea { width: 100%; height: 48px; padding: 0 15px; background: var(--fundo); color: var(--texto);
+    border: 1px solid #262B33; border-radius: 14px; outline: none; font-size: 15px; }
+  input:focus, textarea:focus { border-color: var(--azul); }
+  textarea { height: 84px; padding: 12px 15px; resize: vertical; }
+  input[type=date] { color-scheme: dark; }
+  .erro { color: var(--vermelho); font-size: 13px; min-height: 1em; }
+  .par { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .abrir-mais { width: 100%; min-height: 50px; border: 1px dashed #3A404B; border-radius: 16px; color: var(--suave); font-size: 14px; font-weight: 700; }
+  .passos { display: flex; gap: 6px; }
+  .passos span { flex: 1; height: 6px; border-radius: 3px; background: var(--cartao2); }
+  .passos span.feito { background: var(--azul); }
+  .passos.ganho span { background: var(--verde); }
+  .passos.perdido span { background: rgba(255,122,122,.35); }
+  .info { background: var(--fundo); border-radius: 18px; padding: 4px 16px; }
+  .info > div { padding: 11px 0; border-top: 1px solid var(--linha); }
+  .info > div:first-child { border-top: 0; }
+  .info small { display: block; font-size: 12px; color: var(--fraco); margin-bottom: 2px; }
+  .info a { color: var(--azul); text-decoration: none; }
+  .pill { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(147,180,255,.14); color: var(--azul); }
+  .assunto { background: rgba(110,231,160,.08); border: 1px solid rgba(110,231,160,.25); border-radius: 18px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  .assunto b { color: var(--verde); font-size: 12px; letter-spacing: .04em; }
+  .nota { padding: 11px 0; border-top: 1px solid var(--linha); font-size: 14px; }
+  .nota:first-child { border-top: 0; }
+  .nota small { display: block; color: var(--fraco); font-size: 12px; margin-bottom: 2px; }
+  .anotar { display: flex; gap: 8px; }
+  .anotar button { flex: none; width: 48px; height: 48px; border-radius: 14px; background: var(--azul); color: var(--fundo); font-size: 20px; font-weight: 800; }
+  .g-topo { display: flex; align-items: center; gap: 12px; }
+  .g-topo .avatar { width: 48px; height: 48px; font-size: 17px; }
+  #txtMsg { min-height: 180px; background: #E9FBD9; color: #11301b; border: 0; line-height: 1.5; font-size: 14px; }
+
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 140px); background: var(--texto); color: #0B0D10; z-index: 30;
+    padding: 12px 18px; border-radius: 14px; font-weight: 700; transition: transform .35s cubic-bezier(.3,1.4,.5,1); max-width: calc(100% - 32px); }
+  .toast.on { transform: translate(-50%, 0); }
+  canvas#festa { position: fixed; inset: 0; pointer-events: none; z-index: 29; }
+
+  /* ---------- tour ---------- */
+  .tour-luz { position: fixed; z-index: 20; border-radius: 20px; pointer-events: none;
+    box-shadow: 0 0 0 4px rgba(253,224,71,.55), 0 0 0 9999px rgba(5,6,8,.78); transition: all .4s cubic-bezier(.3,.8,.2,1); }
+  .tour-balao { position: fixed; z-index: 21; background: var(--texto); color: #0B0D10; border-radius: 18px;
+    padding: 16px 18px; box-shadow: 0 20px 50px -10px rgba(0,0,0,.7); transition: top .4s, left .4s; display: flex; flex-direction: column; gap: 8px; }
+  .tour-balao b.t { font-size: 16px; }
+  .tour-balao p { margin: 0; font-size: 14px; color: #2B2F36; }
+  .tour-balao .faca { background: #FEF3C7; border-radius: 10px; padding: 8px 10px; font-weight: 700; font-size: 13px; }
+  .tour-pe { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .tour-pe .pontos { flex: 1; display: flex; gap: 4px; }
+  .tour-pe .pontos i { width: 6px; height: 6px; border-radius: 50%; background: #C9CDD4; }
+  .tour-pe .pontos i.on { background: #0B0D10; width: 16px; border-radius: 3px; }
+  .tour-pe button { padding: 8px 12px; border-radius: 10px; font-weight: 700; font-size: 13px; }
+  .tour-pe .seguir { background: #0B0D10; color: var(--texto); }
+  .tour-pe .seguir:disabled { opacity: .35; cursor: default; }
+  .tour-pe .pular { color: #6B7280; }
+
+  /* senha */
+  .entrada { max-width: 360px; margin: 18vh auto 0; padding: 0 20px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
+
+  /* ---------- celular: abas viram menu embaixo ---------- */
+  @media (max-width: 900px) {
+    .app { padding: 16px 16px 100px; }
+    .abas { position: fixed; left: 12px; right: 12px; bottom: 12px; margin: 0; z-index: 9; justify-content: space-around; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+    .aba { flex-direction: column; gap: 2px; font-size: 11px; padding: 8px 6px; flex: 1; position: relative; }
+    .aba .n { position: absolute; top: 2px; left: calc(50% + 8px); padding: 0 5px; font-size: 10px; }
+    .busca { width: 100%; order: 9; }
+    .esconde-cel { display: none; }
+    .inicio, .quest, .dupla { grid-template-columns: 1fr; }
+    #blocoHoje { order: -1; }
+    .quadro { grid-template-columns: repeat(5, 84vw); overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 0 16px; }
+    .coluna { scroll-snap-align: center; min-height: 300px; }
+    .q-linha { grid-template-columns: 110px 1fr 70px; }
+    .clientes { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gradMeta" x1="0" x2="1"><stop offset="0" stop-color="#6EE7A0"/><stop offset="1" stop-color="#A9C1FF"/></linearGradient></defs></svg>
+
+<div id="telaSenha" class="entrada" hidden>
+  <div class="logo" style="margin:0 auto;width:56px;height:56px">A</div>
+  <div class="titulo" style="font-size:20px">CRM Automy</div>
+  <input id="senha" type="password" placeholder="Senha" autocomplete="current-password">
+  <button class="botao verde grande" id="entrar">Entrar</button>
+  <div class="erro" id="erroSenha"></div>
+</div>
+
+<div class="app" id="app" hidden>
+  <div class="topo">
+    <div class="logo">G&amp;D</div>
+    <div><div class="pequeno" id="dataHoje"></div><div class="titulo">CRM Automy</div></div>
+    <span class="selo" id="selo" hidden>EXEMPLO</span>
+    <nav class="abas" id="abas">
+      <button class="aba on" data-aba="inicio">🏠 Início <span class="n" id="nHoje"></span></button>
+      <button class="aba" data-aba="vendas">📊 Vendas</button>
+      <button class="aba" data-aba="clientes">🤝 Clientes <span class="n" id="nCobrar"></span></button>
+      <button class="aba" data-aba="quest">📝 Questionário</button>
+    </nav>
+    <div class="espaco"></div>
+    <label class="busca">🔎<input id="busca" placeholder="Buscar cliente…"><span class="tecla esconde-cel">Ctrl K</span></label>
+    <button class="botao" id="btnTour" title="Rever o tour">?<span class="esconde-cel"> Como usar</span></button>
+    <button class="botao verde" id="btnNovo">＋ Novo</button>
+  </div>
+
+  <!-- INÍCIO -->
+  <section class="tela" id="t-inicio">
+    <div class="inicio">
+      <div class="coluna-v">
+        <div class="bloco meta kpi" id="cardMeta" title="Toque para mudar a meta">
+          <div class="anel"><svg width="96" height="96" viewBox="0 0 96 96"><circle class="trilho" cx="48" cy="48" r="40"/><circle class="valor" id="anel" cx="48" cy="48" r="40"/></svg><span id="anelPct">0%</span></div>
+          <div><span class="pequeno" id="metaTxt"></span><strong id="metaN"></strong><span class="pequeno" id="metaSub"></span><span class="editar-meta">✏️ mudar meta</span></div>
+        </div>
+        <div class="dupla">
+          <div class="bloco kpi" id="cardReceber"><span class="pequeno">A cobrar agora</span><strong style="color:var(--verde)" id="kReceber"></strong><span class="pequeno" id="kReceberSub"></span></div>
+          <div class="bloco kpi"><span class="pequeno">Em negociação</span><strong id="kNeg"></strong><span class="pequeno" id="kNegSub"></span></div>
+        </div>
+        <div class="bloco" id="blocoCobrar"><div class="bloco-titulo">💰 Cobranças <span class="pequeno">regra 50/50</span></div><div class="lista-v" id="listaCobrar"></div></div>
+      </div>
+      <div class="bloco" id="blocoHoje">
+        <div class="bloco-titulo">✅ Para fazer hoje <span class="pequeno" id="hojeSub"></span></div>
+        <div class="lista-v" id="listaHoje"></div>
+      </div>
+      <div class="coluna-v">
+        <div class="bloco" id="blocoFrio"><div class="bloco-titulo" style="color:var(--aviso)">⚠️ Esfriando <span class="pequeno">5+ dias sem movimento</span></div><div class="lista-v" id="listaFrio"></div></div>
+        <div class="bloco" id="blocoPos"><div class="bloco-titulo">🤝 Pós-venda</div><div class="lista-v" id="listaPos"></div></div>
+        <div class="bloco" id="blocoNiver" hidden><div class="bloco-titulo" style="color:var(--rosa)">🎂 Aniversários <span class="pequeno">próximos 7 dias</span></div><div class="lista-v" id="listaNiver"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENDAS -->
+  <section class="tela" id="t-vendas" hidden>
+    <div class="seg" id="seg"><button class="on" data-vista="quadro">Quadro</button><button data-vista="lista">Todos os clientes</button></div>
+    <div class="quadro" id="quadro"></div>
+    <div class="tabela" id="tabela" hidden></div>
+  </section>
+
+  <!-- CLIENTES -->
+  <section class="tela" id="t-clientes" hidden>
+    <div class="clientes" id="listaClientes"></div>
+  </section>
+
+  <!-- QUESTIONÁRIO -->
+  <section class="tela" id="t-quest" hidden>
+    <div class="quest">
+      <div class="bloco"><div class="bloco-titulo">Até onde as pessoas chegam <span class="pequeno">últimos 30 dias · só números, ninguém identificado</span></div><div id="funilQuest"></div></div>
+      <div class="coluna-v">
+        <div class="dupla">
+          <div class="bloco kpi"><span class="pequeno">Tocaram em Enviar</span><strong style="color:var(--verde)" id="qEnviaram"></strong><span class="pequeno" id="qDescarte"></span></div>
+          <div class="bloco kpi"><span class="pequeno">💬 Foram direto pro WhatsApp</span><strong style="color:var(--wpp)" id="qDireto"></strong><span class="pequeno">sem responder as perguntas</span></div>
+        </div>
+        <div class="bloco"><div class="bloco-titulo" style="color:var(--vermelho)">Onde mais desistem</div><div id="piorQuest" style="font-size:14px;color:var(--suave)"></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="zona-perdido" id="zonaPerdido" data-etapa="Perdido">Solte aqui para marcar como perdido</div>
+
+<!-- ficha do cliente -->
+<dialog id="detalhe"><div class="folha" id="detalheCorpo"></div></dialog>
+
+<!-- mensagem pronta -->
+<dialog id="msg"><div class="folha" id="msgCorpo"></div></dialog>
+
+<!-- meta do mês -->
+<dialog id="metaDlg">
+  <div class="folha">
+    <h2>🎯 Meta do mês</h2>
+    <div><div class="rotulo">Para qual mês</div><div class="chips" id="c_mesMeta"></div></div>
+    <div class="par">
+      <div><div class="rotulo">Quantos contratos</div><input id="m_contratos" inputmode="numeric" placeholder="ex.: 10"></div>
+      <div><div class="rotulo">Quanto em reais (opcional)</div><input id="m_valor" inputmode="numeric" placeholder="ex.: 8000"></div>
+    </div>
+    <div class="pequeno">Mês sem meta usa a do último mês que você definiu.</div>
+    <div class="erro" id="erroMeta"></div>
+    <div class="par"><button class="botao grande" id="metaCancelar">Cancelar</button><button class="botao verde grande" id="metaSalvar">Salvar meta</button></div>
+  </div>
+</dialog>
+
+<!-- cadastrar / editar -->
+<dialog id="form">
+  <div class="folha">
+    <h2 id="formTitulo">Novo cliente</h2>
+    <input id="f_nome" placeholder="Nome *" autocomplete="off">
+    <input id="f_telefone" inputmode="tel" placeholder="WhatsApp com DDD">
+    <input id="f_empresa" placeholder="Empresa (ex.: academia do centro)">
+    <div><div class="rotulo">De onde veio</div><div class="chips" id="c_origem"></div></div>
+    <div><div class="rotulo">Etapa</div><div class="chips" id="c_etapa"></div></div>
+    <div id="blocoMotivo" hidden><div class="rotulo">Por que perdeu</div><div class="chips" id="c_motivoPerda"></div></div>
+    <textarea id="f_dor" placeholder="A dor: o que trava a empresa dele?"></textarea>
+    <input id="f_orcamento" placeholder="Quanto ele pensa investir (ex.: De R$ 600 a R$ 1.000)">
+    <input id="f_valor" inputmode="numeric" placeholder="Valor da proposta, em reais (ex.: 997)">
+    <div id="blocoFechado" hidden style="display:flex;flex-direction:column;gap:12px">
+      <h3>Depois de fechar</h3>
+      <div><div class="rotulo">Data de entrega</div><input id="f_entregaEm" type="date"></div>
+      <div class="par">
+        <div><div class="rotulo">Mensalidade (R$)</div><input id="f_mensalidade" inputmode="numeric" placeholder="vazio = sem"></div>
+        <div><div class="rotulo">Vence todo dia</div><input id="f_venceDia" inputmode="numeric" placeholder="ex.: 5" maxlength="2"></div>
+      </div>
+    </div>
+    <input id="f_proximaAcao" placeholder="Próxima ação (ex.: mandar a amostra)">
+    <div>
+      <div class="rotulo">Quando</div>
+      <div class="chips" id="c_quando"></div>
+      <input id="f_dataProxima" type="date" style="margin-top:10px">
+    </div>
+    <button type="button" class="abrir-mais" id="abrirMais">＋ Conhecer o cliente (opcional)</button>
+    <div id="maisCampos" hidden style="display:flex;flex-direction:column;gap:14px">
+      <h3>Quem é</h3>
+      <input id="f_cargo" placeholder="Cargo (dono, gerente, sócio…)">
+      <input id="f_cidade" placeholder="Cidade">
+      <input id="f_email" type="email" placeholder="E-mail">
+      <input id="f_instagram" placeholder="@ do Instagram">
+      <div><div class="rotulo">Melhor horário para falar</div><div class="chips" id="c_melhorHorario"></div></div>
+      <h3>A relação</h3>
+      <input id="f_aniversario" inputmode="numeric" placeholder="Aniversário (dd/mm)" maxlength="5">
+      <input id="f_time" placeholder="Time do coração ⚽">
+      <div><div class="rotulo">Do que ele gosta (pode marcar vários)</div><div class="chips" id="c_interesses"></div></div>
+      <input id="f_familia" placeholder="Família (ex.: casado, 2 filhos, a Ana e o Pedro)">
+      <textarea id="f_observacoes" placeholder="Outras coisas que ele contou e vale lembrar"></textarea>
+    </div>
+    <div class="erro" id="erro"></div>
+    <div class="par"><button class="botao grande" id="cancelar">Cancelar</button><button class="botao verde grande" id="salvarBtn">Salvar</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+<canvas id="festa"></canvas>
+
+<script>
+const ETAPAS = ['Conversa', 'Qualificado', 'Diagnóstico', 'Proposta', 'Fechado', 'Perdido'];
+const ABERTAS = ['Conversa', 'Qualificado', 'Diagnóstico', 'Proposta'];
+const FUNIL = ETAPAS.slice(0, 5);
+const COR = { Conversa: '#9AA1AD', Qualificado: '#A9C1FF', Diagnóstico: '#C4B5FD', Proposta: '#F7B84B', Fechado: '#6EE7A0', Perdido: '#FF7A7A' };
+const ORIGENS = ['Instagram', 'Questionário', 'Indicação', 'Vitor', 'Rede', 'Outro'];
+const MOTIVOS = ['Sem dinheiro agora', 'Sumiu', 'Não era quem decide', 'Fechou com outro', 'Não era caso de sistema', 'Outro'];
+const HORARIOS = ['Manhã', 'Tarde', 'Noite', 'Qualquer hora'];
+const INTERESSES = ['Futebol', 'Música', 'Academia', 'Viagem', 'Pesca', 'Carros e motos', 'Games', 'Culinária', 'Filmes e séries', 'Leitura'];
+const QUANDO = [['Hoje', 0], ['Amanhã', 1], ['Em 3 dias', 3], ['Em 1 semana', 7]];
+// Telas do questionário, na ordem. "Chegou na tela N" = respondeu as anteriores.
+const TELAS_QUEST = ['Começaram', 'P2 · dor', 'P3 · o que perde', 'P4 · quem decide', 'P5 · quando', 'P6 · prejuízo e orçamento', 'Viram a mensagem pronta'];
+// Campos de texto simples do formulário (os de chip ficam em "escolha").
+const TEXTOS = ['nome', 'telefone', 'empresa', 'dor', 'orcamento', 'valor', 'proximaAcao', 'dataProxima', 'entregaEm', 'mensalidade', 'venceDia',
+  'cargo', 'cidade', 'email', 'instagram', 'aniversario', 'time', 'familia', 'observacoes'];
+const META_PADRAO = { contratos: 10, valor: 8000 };
+const CORES_AV = ['#6EE7A0', '#A9C1FF', '#F7B84B', '#F9A8D4', '#C4B5FD', '#7DD3FC'];
+// Antes, DEMO detectava "abri isso fora do Apps Script". Agora o CRM roda
+// fora do Apps Script sempre (é uma página normal, hospedada no GitHub
+// Pages) — então o demo vira um pedido explícito, só por ?demo=1 na URL.
+const DEMO = new URLSearchParams(location.search).get('demo') === '1';
+// Endereço da Edge Function do Supabase que faz as vezes do antigo Codigo.gs.
+const API_URL = 'https://czzqvzrslpfbtxknouzl.supabase.co/functions/v1/crm';
+const $ = id => document.getElementById(id);
+
+let leads = [], notas = [], questionario = null, metas = [];
+let senha = '';
+let editando = null;
+let ensaio = false; // true durante o tour: usa clientes de exemplo e não salva nada
+const escolha = {}; // valores dos chips do formulário
+
+// ---------- conversa com o servidor ----------
+// Fala com a Edge Function do Supabase por fetch (POST). Com ?demo=1 na URL
+// (ou durante o tour) não fala com o servidor: usa dados de exemplo.
+async function api(funcao, ...args) {
+  if (DEMO || ensaio) return new Promise(ok => setTimeout(() => ok(demo[funcao](...args)), 120));
+  const corpo = { acao: funcao, senha };
+  if (funcao === 'salvar') corpo.lead = args[0];
+  else if (funcao === 'anotar') { corpo.leadId = args[0]; corpo.texto = args[1]; }
+  else if (funcao === 'salvarMeta') { corpo.mes = args[0]; corpo.contratos = args[1]; corpo.valor = args[2]; }
+  const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.erro || 'Não entrou.');
+  return j.dado;
+}
+
+const demo = {
+  _chave: 'crmDemoV3',
+  _ler() {
+    try { const s = localStorage.getItem(this._chave); if (s) return JSON.parse(s); } catch (e) {}
+    const em = n => { const d = new Date(); d.setDate(d.getDate() + n); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); };
+    const at = n => dataISO(n) + ' 10:00';
+    return {
+      leads: [
+        { id: 'a1', nome: 'Vitor', telefone: '88999990000', empresa: 'Academia do Vitor', cargo: 'Dono', origem: 'Instagram', etapa: 'Proposta', valor: '997', dor: 'controle de alunos e mensalidades no caderno', proximaAcao: 'Perguntar se a mudança já saiu', dataProxima: dataISO(0), aniversario: em(3), time: 'Fortaleza', interesses: 'Futebol, Academia', familia: 'Casado', melhorHorario: 'Noite', atualizadoEm: at(-3) },
+        { id: 'a2', nome: 'Carla Souza', telefone: '88988887777', empresa: 'Clínica Bem Estar', origem: 'Questionário', etapa: 'Conversa', valor: '', dor: 'confirmar agendamento um por um no WhatsApp', orcamento: 'De R$ 600 a R$ 1.000', perdeTipo: 'tempo', perdeQtd: 'De 1 a 2 horas', quantoVale: '40', proximaAcao: 'Conferir se a mensagem chegou no WhatsApp', dataProxima: dataISO(0), atualizadoEm: at(0) },
+        { id: 'a3', nome: 'Seu Zé', telefone: '88977776666', empresa: 'Mercadinho Central', origem: 'Rede', etapa: 'Diagnóstico', valor: '1497', dor: 'não saber quais produtos dão lucro', proximaAcao: 'Mandar a amostra clicável', dataProxima: dataISO(-1), time: 'Ceará', interesses: 'Futebol, Pesca', atualizadoEm: at(-2) },
+        { id: 'a5', nome: 'Marcos', telefone: '88944443333', empresa: 'Oficina do Marcos', origem: 'Indicação', etapa: 'Qualificado', valor: '', dor: 'orçamento feito à mão e cliente que some', proximaAcao: 'Marcar a reunião de 30 min', dataProxima: dataISO(2), atualizadoEm: at(-8) },
+        { id: 'a6', nome: 'Paulo', telefone: '88933332222', empresa: 'Escola de Inglês', origem: 'Rede', etapa: 'Proposta', valor: '1297', dor: 'cobrança de mensalidade no papel', proximaAcao: 'Esperar resposta da proposta', dataProxima: dataISO(3), atualizadoEm: at(-6) },
+        { id: 'a4', nome: 'Rafa Lima', telefone: '88966665555', empresa: 'Rafa Modas', origem: 'Instagram', etapa: 'Fechado', valor: '797', fechadoEm: dataISO(-2), dor: 'estoque desencontrado entre loja e Instagram', entradaPaga: 'sim', entregaEm: dataISO(3), atualizadoEm: at(-2) },
+        { id: 'a7', nome: 'Dona Célia', telefone: '88922221111', empresa: 'Salão da Célia', origem: 'Indicação', etapa: 'Fechado', valor: '1297', fechadoEm: dataISO(-45), dor: 'agenda no caderno e cliente faltando', entradaPaga: 'sim', finalPaga: 'sim', entregaEm: dataISO(-20), mensalidade: '97', venceDia: String(new Date(Date.now() + 3 * 864e5).getDate()), atualizadoEm: at(-20) },
+        { id: 'a8', nome: 'Lucas', telefone: '88911110000', empresa: 'Pet Shop Amigo', origem: 'Instagram', etapa: 'Fechado', valor: '897', fechadoEm: dataISO(-60), dor: 'lembrar cliente da vacina e do banho', entradaPaga: 'sim', finalPaga: 'sim', entregaEm: dataISO(-40), atualizadoEm: at(-40) },
+        { id: 'a9', nome: 'Dona Lúcia', telefone: '88955554444', empresa: 'Restaurante', origem: 'Rede', etapa: 'Perdido', motivoPerda: 'Sem dinheiro agora', dor: 'pedidos perdidos no WhatsApp', atualizadoEm: at(-15) },
+      ],
+      notas: [
+        { id: 'n1', leadId: 'a1', data: dataISO(-10) + ' 20:15', texto: 'Mandei a amostra. Gostou do painel, perguntou do parcelamento.' },
+        { id: 'n2', leadId: 'a1', data: dataISO(-4) + ' 19:02', texto: 'Disse que fecha quando mudar de espaço. Torce pro Fortaleza, falamos do jogo.' },
+      ],
+      metas: [],
+    };
+  },
+  _gravar(d) { try { localStorage.setItem(this._chave, JSON.stringify(d)); } catch (e) {} },
+  _zerar() { try { localStorage.removeItem(this._chave); } catch (e) {} },
+  listar() { return Object.assign({ questionario: { dias: 30, abriram: 120, passos: [74, 52, 47, 44, 41, 37, 33], enviaram: 22, descartados: 2, direto: 18 } }, this._ler()); },
+  salvar(lead) {
+    const d = this._ler();
+    const agora = dataISO(0) + ' 12:00';
+    let reg = lead.id ? d.leads.find(x => x.id === lead.id) : null;
+    if (!reg) { reg = { id: Math.random().toString(36).slice(2, 10), etapa: 'Conversa', criadoEm: agora }; d.leads.push(reg); }
+    Object.assign(reg, lead, { atualizadoEm: agora });
+    if (reg.etapa === 'Fechado' && !reg.fechadoEm) reg.fechadoEm = dataISO(0);
+    if (reg.etapa !== 'Fechado') reg.fechadoEm = '';
+    this._gravar(d);
+    return reg;
+  },
+  anotar(leadId, texto) {
+    const d = this._ler();
+    const agora = new Date();
+    const nota = { id: Math.random().toString(36).slice(2, 10), leadId, texto,
+      data: dataISO(0) + ' ' + String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0') };
+    d.notas.push(nota); this._gravar(d);
+    return nota;
+  },
+  salvarMeta(mes, contratos, valor) {
+    const d = this._ler();
+    d.metas = (d.metas || []).filter(m => m.mes !== mes).concat({ mes, contratos: String(contratos), valor: String(valor || '') });
+    this._gravar(d);
+    return true;
+  },
+};
+
+// ---------- utilidades ----------
+function dataISO(dias) {
+  const d = new Date(); d.setDate(d.getDate() + dias);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+// Dias de hoje até a data (negativo = já passou). null se não tem data.
+function diasAte(iso) {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(iso || '')) return null;
+  const h = new Date(); h.setHours(0, 0, 0, 0);
+  return Math.round((new Date(iso.slice(0, 10) + 'T00:00') - h) / 86400000);
+}
+const ddmm = iso => iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) : '';
+const mesISO = (n = 0) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+const nomeMes = mes => new Date(mes + '-15T12:00').toLocaleDateString('pt-BR', { month: 'long' });
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+const reais = v => 'R$ ' + (Number(v) || 0).toLocaleString('pt-BR');
+const primeiro = n => String(n || '').split(/\s+/)[0];
+const iniciais = n => String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+function corAv(l) { let h = 0; for (const c of String(l.id)) h = (h * 31 + c.charCodeAt(0)) % 997; return CORES_AV[h % CORES_AV.length]; }
+const av = l => `<span class="avatar" style="background:${corAv(l)}">${esc(iniciais(l.nome))}</span>`;
+function linkWpp(tel, texto) {
+  let n = String(tel || '').replace(/\D/g, '');
+  if (n && n.length <= 11) n = '55' + n; // sem o 55 do Brasil, coloca
+  // ":\/\/" e não "://": o Apps Script apaga tudo depois de "//" achando que é comentário.
+  return 'https:\/\/wa.me/' + n + (texto ? '?text=' + encodeURIComponent(texto) : '');
+}
+const aberto = l => ABERTAS.includes(l.etapa);
+const quando = l => diasAte(l.dataProxima);
+// Dias sem movimento: desde a última vez que o cliente foi salvo ou mexido.
+const parado = l => { const d = diasAte((l.atualizadoEm || l.criadoEm || '').slice(0, 10)); return d === null ? 0 : -d; };
+function estado(l) { const q = quando(l); return q === null || !aberto(l) ? '' : q < 0 ? 'atrasado' : q === 0 ? 'hoje' : ''; }
+function quandoTxt(q, iso) { return q === null ? '' : q < 0 ? 'Atrasado' : q === 0 ? 'Hoje' : q === 1 ? 'Amanhã' : ddmm(iso); }
+// Entrada leva o arredondamento; a 2ª parte é o que sobra (797 = 399 + 398).
+const parte = (l, p) => { const v = Number(l.valor) || 0; return p === 'final' ? v - Math.ceil(v / 2) : Math.ceil(v / 2); };
+// Próximo vencimento da mensalidade: o dia X deste mês ou, se já passou, do mês que vem.
+function diasAteVence(dia) {
+  const n = Number(dia); if (!n) return null;
+  const h = new Date(); h.setHours(0, 0, 0, 0);
+  const alvo = m => { const ult = new Date(h.getFullYear(), m + 1, 0).getDate(); return new Date(h.getFullYear(), m, Math.min(n, ult)); };
+  let d = alvo(h.getMonth()); if (d < h) d = alvo(h.getMonth() + 1);
+  return Math.round((d - h) / 86400000);
+}
+function diasNiver(ddmmTxt) {
+  const m = /^(\d{2})\/(\d{2})$/.exec(ddmmTxt || ''); if (!m) return null;
+  const h = new Date(); h.setHours(0, 0, 0, 0);
+  let alvo = new Date(h.getFullYear(), +m[2] - 1, +m[1]);
+  if (alvo < h) alvo = new Date(h.getFullYear() + 1, +m[2] - 1, +m[1]);
+  return Math.round((alvo - h) / 86400000);
+}
+const quandoNiver = n => n === 0 ? 'hoje' : n === 1 ? 'amanhã' : `em ${n} dias`;
+// Meta do mês: a definida para ele ou, se não tem, a do último mês definido antes.
+function metaDo(mes) {
+  const antes = metas.filter(m => m.mes <= mes).sort((a, b) => b.mes.localeCompare(a.mes))[0];
+  return antes ? { contratos: Number(antes.contratos) || 1, valor: Number(antes.valor) || 0, mes: antes.mes } : Object.assign({ mes: '' }, META_PADRAO);
+}
+
+// Ideias de assunto a partir do que o cliente contou: a tela lembra por você.
+function assuntos(l) {
+  const ideias = [];
+  const n = diasNiver(l.aniversario);
+  if (n !== null && n <= 7) ideias.push(n === 0 ? '🎂 Hoje é aniversário dele. Manda os parabéns antes de qualquer assunto de trabalho.' : `🎂 Faz aniversário ${quandoNiver(n)} (${l.aniversario}). Anota para mandar parabéns.`);
+  if (l.time) ideias.push(`⚽ Torce pro ${l.time}. Puxa o assunto do último jogo antes de falar de trabalho.`);
+  else if ((l.interesses || '').includes('Futebol')) ideias.push('⚽ Gosta de futebol. Pergunta para que time ele torce e anota.');
+  if (l.familia) ideias.push(`👨‍👩‍👧 Família: ${l.familia}. Vale perguntar como estão.`);
+  const outros = (l.interesses || '').split(',').map(s => s.trim()).filter(s => s && s !== 'Futebol');
+  if (outros.length) ideias.push(`💬 Também gosta de: ${outros.join(', ').toLowerCase()}.`);
+  if (l.melhorHorario) ideias.push(`🕐 Melhor horário para falar: ${l.melhorHorario.toLowerCase()}.`);
+  return ideias;
+}
+
+// ---------- desenhar ----------
+let abaAtual = 'inicio', vista = 'quadro';
+function desenhar() {
+  const termo = $('busca').value.trim().toLowerCase();
+  const vis = leads.filter(l => !termo || [l.nome, l.empresa, l.dor, l.cidade, l.time].join(' ').toLowerCase().includes(termo));
+  // Dinheiro e pós-venda olham TODOS os clientes: a busca só filtra o que aparece.
+  const fechados = leads.filter(l => l.etapa === 'Fechado');
+
+  // meta do mês
+  const mes = mesISO(0), meta = metaDo(mes);
+  const doMes = leads.filter(l => l.etapa === 'Fechado' && (l.fechadoEm || '').startsWith(mes));
+  const somaMes = doMes.reduce((s, l) => s + (Number(l.valor) || 0), 0);
+  const pct = Math.min(100, Math.round(doMes.length / meta.contratos * 100));
+  const C = 2 * Math.PI * 40;
+  $('anel').style.strokeDasharray = C; $('anel').style.strokeDashoffset = C * (1 - pct / 100);
+  $('anelPct').textContent = pct + '%';
+  $('metaTxt').textContent = `Meta de ${nomeMes(mes)}` + (meta.mes && meta.mes !== mes ? ' (a mesma de ' + nomeMes(meta.mes) + ')' : '');
+  $('metaN').textContent = `${doMes.length} de ${meta.contratos} contratos`;
+  $('metaSub').textContent = doMes.length >= meta.contratos ? 'Meta batida! 🏆'
+    : reais(somaMes) + (meta.valor ? ' de ' + reais(meta.valor) : ' fechados') + ` · faltam ${meta.contratos - doMes.length}`;
+
+  // cobranças (regra 50/50) e lembrete de mensalidade que vence em até 5 dias.
+  // A mensalidade é só lembrete (não se marca "paga do mês"): fica fora do total.
+  const cobrar = [];
+  fechados.forEach(l => {
+    if (!(Number(l.valor) > 0)) return;
+    if (!l.entradaPaga) cobrar.push({ l, tipo: 'entrada', txt: 'Entrada de 50% para começar', v: parte(l, 'entrada') });
+    else if (!l.finalPaga) {
+      const e = diasAte(l.entregaEm);
+      if (e === null || e <= 3) cobrar.push({ l, tipo: 'final', txt: e === null ? '2ª metade na entrega (sem data)' : e <= 0 ? '2ª metade: já entregou' : `2ª metade na entrega (${quandoTxt(e, l.entregaEm).toLowerCase()})`, v: parte(l, 'final') });
+    }
+    const dv = diasAteVence(l.venceDia);
+    const entregue = diasAte(l.entregaEm) !== null && diasAte(l.entregaEm) <= 0;
+    if (Number(l.mensalidade) > 0 && entregue && dv !== null && dv <= 5) cobrar.push({ l, tipo: 'mensal', txt: dv === 0 ? 'Mensalidade vence hoje' : `Mensalidade vence em ${dv} dia${dv > 1 ? 's' : ''}`, v: Number(l.mensalidade) });
+  });
+  const metades = cobrar.filter(c => c.tipo !== 'mensal');
+  $('kReceber').textContent = reais(metades.reduce((s, c) => s + c.v, 0));
+  $('kReceberSub').textContent = metades.length + (metades.length === 1 ? ' cobrança' : ' cobranças') + (cobrar.length > metades.length ? ' + mensalidade' : '');
+  $('listaCobrar').innerHTML = cobrar.map(c => `<div class="linha-item" data-msg="${c.l.id}" data-tipo="${c.tipo}">${av(c.l)}
+    <div class="meio"><div class="nome">${esc(c.l.nome)}</div><div class="sub">${esc(c.txt)}</div></div><span class="valor-dir">${reais(c.v)}</span></div>`).join('')
+    || '<div class="vazio">Ninguém devendo. 👌</div>';
+  $('nCobrar').textContent = cobrar.filter(c => c.tipo !== 'mensal').length || '';
+
+  const abertos = leads.filter(aberto);
+  $('kNeg').textContent = reais(abertos.reduce((s, l) => s + (Number(l.valor) || 0), 0));
+  $('kNegSub').textContent = abertos.length + ' em aberto';
+
+  // lista do dia
+  const paraHoje = vis.filter(l => aberto(l) && quando(l) !== null && quando(l) <= 0).sort((a, b) => quando(a) - quando(b));
+  $('nHoje').textContent = paraHoje.length || '';
+  const atras = paraHoje.filter(l => quando(l) < 0).length;
+  $('hojeSub').innerHTML = atras ? `<b style="color:var(--vermelho)">${atras} atrasado${atras > 1 ? 's' : ''}</b> · chama primeiro` : paraHoje.length + ' tarefa' + (paraHoje.length === 1 ? '' : 's');
+  $('listaHoje').innerHTML = paraHoje.map(l => `<div class="tarefa" data-id="${l.id}">
+      <button class="check" data-feito="${l.id}" aria-label="Marcar como feito"></button>
+      <div class="meio" data-abrir="${l.id}"><div class="nome">${esc(l.nome)} <span class="emp">${l.empresa ? '· ' + esc(l.empresa) + ' ' : ''}· ${l.etapa}</span></div>
+        <div class="prox">${esc(l.proximaAcao) || 'Falar com o cliente'}</div>
+        <div class="depois" hidden><span class="pequeno">Próximo contato:</span>
+          <button data-adiar="0">Hoje mais tarde</button><button data-adiar="1">Amanhã</button><button data-adiar="3">3 dias</button><button data-adiar="7">1 semana</button>
+          <label>📅 Escolher data<input type="date" data-data></label></div></div>
+      <div class="lado"><span class="tag ${estado(l)}">${quandoTxt(quando(l), l.dataProxima)}</span><button class="mini-wpp" data-msg="${l.id}">💬 Mensagem</button></div>
+    </div>`).join('') || '<div class="vazio"><div class="grande">🎉</div>Tudo feito por hoje.</div>';
+
+  // esfriando
+  const frios = vis.filter(l => aberto(l) && parado(l) > 5).sort((a, b) => parado(b) - parado(a));
+  $('listaFrio').innerHTML = frios.map(l => `<div class="linha-item" data-abrir="${l.id}">${av(l)}<div class="meio"><div class="nome">${esc(l.nome)}</div>
+    <div class="sub">${parado(l)} dias em ${l.etapa}. Puxa assunto.</div></div><span class="tag frio">⚠️ ${parado(l)}d</span></div>`).join('') || '<div class="vazio">Ninguém esfriando. 🔥</div>';
+
+  // pós-venda
+  const pos = [];
+  fechados.forEach(l => {
+    const e = diasAte(l.entregaEm);
+    if (e === null) pos.push({ l, txt: 'Definir a data de entrega' });
+    else if (e > 0) pos.push({ l, txt: 'Entrega ' + quandoTxt(e, l.entregaEm).toLowerCase() });
+    else if (e + 30 >= 0 && e + 30 <= 10) pos.push({ l, txt: `Garantia acaba em ${e + 30} dia${e + 30 === 1 ? '' : 's'}` });
+    if (e !== null && e <= -30 && !l.indicacaoPedida) pos.push({ l, txt: 'Um mês de uso: pedir indicação', tipo: 'indicacao' });
+  });
+  $('listaPos').innerHTML = pos.map(p => `<div class="linha-item" ${p.tipo ? `data-msg="${p.l.id}" data-tipo="${p.tipo}"` : `data-abrir="${p.l.id}"`}>${av(p.l)}
+    <div class="meio"><div class="nome">${esc(p.l.nome)}</div><div class="sub">${esc(p.txt)}</div></div>${p.tipo ? '<span class="mini-wpp">💬</span>' : ''}</div>`).join('') || '<div class="vazio">Nada no pós-venda.</div>';
+
+  // aniversários
+  const nivers = vis.filter(l => l.etapa !== 'Perdido' && diasNiver(l.aniversario) !== null && diasNiver(l.aniversario) <= 7).sort((a, b) => diasNiver(a.aniversario) - diasNiver(b.aniversario));
+  $('blocoNiver').hidden = !nivers.length;
+  $('listaNiver').innerHTML = nivers.map(l => `<div class="linha-item" data-abrir="${l.id}">${av(l)}<div class="meio"><div class="nome">${esc(l.nome)}</div>
+    <div class="sub">Aniversário ${quandoNiver(diasNiver(l.aniversario))} · manda os parabéns</div></div><span class="tag niver">🎂 ${esc(l.aniversario)}</span></div>`).join('');
+
+  desenharQuadro(vis);
+  desenharTabela(vis);
+  desenharClientes(vis.filter(l => l.etapa === 'Fechado'));
+  desenharQuest();
+}
+
+function cartao(l) {
+  const q = quando(l), p = parado(l);
+  const pago = l.entradaPaga && l.finalPaga ? '✓ pago' : l.entradaPaga ? '½ pago' : 'falta entrada';
+  return `<div class="cartao" draggable="true" data-id="${l.id}" data-abrir="${l.id}" tabindex="0">
+    <div class="c-linha1">${av(l)}<div><div class="nome">${esc(l.nome)}</div><div class="emp">${esc(l.empresa)}</div></div></div>
+    ${aberto(l) && l.proximaAcao ? `<div class="c-prox">${esc(l.proximaAcao)}</div>` : ''}
+    <div class="c-rodape">
+      ${aberto(l) && q !== null ? `<span class="tag ${estado(l)}">${quandoTxt(q, l.dataProxima)}</span>` : ''}
+      ${l.etapa === 'Fechado' ? `<span class="tag ${l.entradaPaga && l.finalPaga ? 'ok' : 'hoje'}">${pago}</span>` : ''}
+      ${aberto(l) && p > 5 ? `<span class="tag frio">⚠️ ${p} dias parado</span>` : ''}
+      ${l.origem === 'Questionário' ? '<span class="tag quest">📝 questionário</span>' : ''}
+      ${Number(l.valor) ? `<span class="c-valor">${reais(l.valor)}</span>` : ''}
+    </div>
+    <div class="acoes"><button class="acao" data-msg="${l.id}">💬 Mensagem</button>
+      ${aberto(l) ? `<button class="acao" data-avancar="${l.id}">Avançar →</button>` : ''}</div>
+  </div>`;
+}
+
+function desenharQuadro(vis) {
+  // Conversão: dos que chegaram na etapa anterior, quantos chegaram nesta.
+  // Conta quem passou e seguiu adiante; perdidos não entram (não se sabe onde pararam).
+  const chegou = FUNIL.map((e, i) => leads.filter(l => FUNIL.indexOf(l.etapa) >= i).length);
+  $('quadro').innerHTML = FUNIL.map((e, i) => {
+    const da = vis.filter(l => l.etapa === e).sort((a, b) => (a.dataProxima || '9999').localeCompare(b.dataProxima || '9999'));
+    const soma = da.reduce((s, l) => s + (Number(l.valor) || 0), 0);
+    const pc = i ? Math.round(chegou[i] / Math.max(1, chegou[i - 1]) * 100) : null;
+    const conv = i ? `<span class="col-conv ${pc < 50 ? 'baixo' : ''}" title="Dos que chegaram em ${ETAPAS[i - 1]}, ${pc}% chegaram aqui">↗ ${pc}% passam</span>` : '<span class="col-conv">porta de entrada</span>';
+    return `<div class="coluna" data-etapa="${e}" style="--cor:${COR[e]}">
+      <div class="col-topo"><b>${e}</b><span class="conta">${da.length}</span></div>
+      <div class="col-info">${conv}<span>${soma ? reais(soma) : ''}</span></div>
+      ${da.map(cartao).join('') || '<div class="coluna-vazia">Arraste um cliente para cá</div>'}</div>`;
+  }).join('');
+}
+
+function desenharTabela(vis) {
+  const linhas = vis.slice().sort((a, b) => a.nome.localeCompare(b.nome)).map(l => {
+    const est = estado(l);
+    return `<tr data-abrir="${l.id}">
+      <td><div class="nome">${esc(l.nome)}</div><div class="emp">${esc(l.empresa)}${l.cidade ? ' · ' + esc(l.cidade) : ''}</div></td>
+      <td><span class="etapa-pill" style="--cor:${COR[l.etapa]}">${esc(l.etapa)}</span></td>
+      <td class="pequeno">${esc(l.origem)}</td>
+      <td>${esc(l.etapa === 'Perdido' ? l.motivoPerda : l.proximaAcao) || '<span class="pequeno">—</span>'}</td>
+      <td>${est ? `<span class="tag ${est}">${est === 'hoje' ? 'Hoje' : 'Atrasado'}</span>` : `<span class="pequeno">${ddmm(l.dataProxima) || '—'}</span>`}</td>
+      <td class="num">${Number(l.valor) ? reais(l.valor) : '<span class="pequeno">—</span>'}</td></tr>`;
+  }).join('');
+  $('tabela').innerHTML = `<table><thead><tr><th>Cliente</th><th>Etapa</th><th>Origem</th><th>Próxima ação / motivo</th><th>Quando</th><th class="num">Valor</th></tr></thead>
+    <tbody>${linhas || '<tr><td colspan="6" class="vazio">Ninguém encontrado.</td></tr>'}</tbody></table>`;
+}
+
+function desenharClientes(fechados) {
+  $('listaClientes').innerHTML = fechados.sort((a, b) => (b.fechadoEm || '').localeCompare(a.fechadoEm || '')).map(l => {
+    const pago = (l.entradaPaga ? 1 : 0) + (l.finalPaga ? 1 : 0);
+    const e = diasAte(l.entregaEm);
+    const entregaTxt = e === null ? 'Sem data de entrega' : e > 0 ? `Entrega ${quandoTxt(e, l.entregaEm).toLowerCase()}` : e === 0 ? 'Entrega hoje' : `Entregue há ${-e} dias`;
+    const garTxt = e === null || e > 0 ? 'começa na entrega' : e + 30 >= 0 ? `até ${ddmm(dataISO(e + 30))} (faltam ${e + 30} dias)` : 'terminou';
+    const proxMsg = !l.entradaPaga ? 'entrada' : !l.finalPaga ? 'final' : Number(l.mensalidade) ? 'mensal' : 'indicacao';
+    return `<div class="bloco cliente" data-cliente="${l.id}">
+      <div class="cl-topo" data-abrir="${l.id}">${av(l)}<div><div class="nome">${esc(l.nome)}</div><div class="emp">${esc(l.empresa)}${l.fechadoEm ? ' · fechou ' + ddmm(l.fechadoEm) : ''}</div></div><span class="valor-dir">${reais(l.valor)}</span></div>
+      <div class="barra-pg"><i style="width:${pago * 50}%"></i></div>
+      <div class="pagto">
+        <div class="metade ${l.entradaPaga ? 'paga' : ''}"><span class="pequeno">Entrada · 50%</span><b>${reais(parte(l, 'entrada'))}</b>
+          ${l.entradaPaga ? '<span class="tag ok" style="align-self:flex-start">✓ pago</span>' : `<button data-pagar="entradaPaga" data-id="${l.id}">Marcar como pago</button>`}</div>
+        <div class="metade ${l.finalPaga ? 'paga' : ''}"><span class="pequeno">Na entrega · 50%</span><b>${reais(parte(l, 'final'))}</b>
+          ${l.finalPaga ? '<span class="tag ok" style="align-self:flex-start">✓ pago</span>' : `<button data-pagar="finalPaga" data-id="${l.id}">Marcar como pago</button>`}</div>
+      </div>
+      <div class="marcos">
+        <div class="marco"><span class="ic">📦</span>${entregaTxt}<label>📅 ${e === null ? 'Definir' : 'Mudar'}<input type="date" data-entrega="${l.id}" value="${esc(l.entregaEm)}"></label></div>
+        <div class="marco"><span class="ic">🛡️</span>Garantia de 30 dias: ${garTxt}</div>
+        <div class="marco"><span class="ic">🔁</span>${Number(l.mensalidade) ? `Mensalidade ${reais(l.mensalidade)}${l.venceDia ? ' · vence dia ' + esc(l.venceDia) : ''}` : 'Sem mensalidade · suporte avulso'}<button data-editar="${l.id}">Editar</button></div>
+        ${e !== null && e <= -30 ? `<div class="marco"><span class="ic">⭐</span>Indicação<span class="tag ${l.indicacaoPedida ? 'ok' : 'frio'}">${l.indicacaoPedida ? 'pedida' : 'ainda não pediu'}</span></div>` : ''}
+      </div>
+      <div class="cl-acoes"><button data-msg="${l.id}" data-tipo="${proxMsg}">💬 Mensagem</button><button data-abrir="${l.id}">Abrir ficha</button></div>
+    </div>`;
+  }).join('') || '<div class="bloco"><div class="vazio"><div class="grande">🤝</div>Nenhum cliente fechado ainda. Quando fechar, arraste o cartão para "Fechado" na aba Vendas.</div></div>';
+}
+
+function desenharQuest() {
+  const q = questionario;
+  if (!q || !q.abriram) {
+    $('funilQuest').innerHTML = '<div class="vazio">Ninguém abriu o questionário ainda. Os números aparecem aqui quando o link estiver na bio.</div>';
+    $('qEnviaram').textContent = '0'; $('qDescarte').textContent = ''; $('qDireto').textContent = '0'; $('piorQuest').textContent = '—';
+    return;
+  }
+  const linhas = [['Abriram', q.abriram], ...TELAS_QUEST.map((t, i) => [t, q.passos[i] || 0]), ['Tocaram em Enviar', q.enviaram]];
+  // Quem tocou em "falar direto" sai na primeira tela, mas não desistiu:
+  // é descontado da queda entre "Abriram" e "Começaram".
+  const direto = q.direto || 0;
+  let pior = 0, queda = 0;
+  linhas.forEach((x, i) => { const perdeu = linhas[i - 1] ? linhas[i - 1][1] - x[1] - (i === 1 ? direto : 0) : 0; if (i && perdeu > queda) { queda = perdeu; pior = i; } });
+  $('funilQuest').innerHTML = linhas.map(([r, n], i) => `<div class="q-linha ${i === linhas.length - 1 ? 'fim' : ''} ${i === pior ? 'pior' : ''}">
+    <span>${r}</span><span class="q-barra"><i style="width:${n / q.abriram * 100}%"></i></span><span class="q-num">${n} <small>${Math.round(n / q.abriram * 100)}%</small></span></div>`).join('');
+  $('qEnviaram').innerHTML = `${q.enviaram} <span style="font-size:15px;color:var(--fraco)">de ${q.abriram} (${Math.round(q.enviaram / q.abriram * 100)}%)</span>`;
+  $('qDireto').innerHTML = `${direto} <span style="font-size:15px;color:var(--fraco)">(${Math.round(direto / q.abriram * 100)}%)</span>`;
+  $('qDescarte').textContent = q.descartados ? `${q.descartados} descartado${q.descartados > 1 ? 's' : ''} (robô, rápido demais ou acima do limite). Se foi gente, a mensagem chegou no WhatsApp mesmo assim.` : '';
+  $('piorQuest').innerHTML = !pior ? 'Ainda sem queda clara.'
+    : pior === 1 ? `<b style="color:var(--texto)">${queda} pessoas</b> abriram e saíram sem começar${direto ? ` (fora as ${direto} que foram direto pro WhatsApp)` : ''}. Quem precisa mudar é a tela de abertura: o convite não convenceu.`
+    : `<b style="color:var(--texto)">${queda} pessoas</b> pararam entre "${linhas[pior - 1][0]}" e "${linhas[pior][0]}". É a pergunta que mais espanta gente: é ela que muda primeiro.`;
+}
+
+// ---------- abas e vistas ----------
+function irPara(aba) {
+  abaAtual = aba;
+  document.querySelectorAll('.aba').forEach(b => b.classList.toggle('on', b.dataset.aba === aba));
+  ['inicio', 'vendas', 'clientes', 'quest'].forEach(a => { $('t-' + a).hidden = a !== aba; });
+}
+function aplicarVista() {
+  document.querySelectorAll('[data-vista]').forEach(b => b.classList.toggle('on', b.dataset.vista === vista));
+  $('quadro').hidden = vista !== 'quadro';
+  $('tabela').hidden = vista !== 'lista';
+}
+
+// ---------- mensagens prontas ----------
+// Textos com a voz do Gabriel. {chaves} viram os dados do cliente. Sempre
+// abrem para editar antes de mandar.
+const MODELOS = {
+  conversa: ['Primeiro contato', 'Oi, {nome}! Aqui é o Gabriel, da Automy. 👋\nVi o que você me contou sobre {dor}. Posso te fazer umas perguntas rápidas pra entender melhor? Por mensagem mesmo, sem reunião.'],
+  qualificado: ['Marcar a reunião', '{nome}, com o que você me contou já dá pra eu montar uma amostra de como ficaria na {empresa}.\nTe mostro numa conversa de 30 minutos, com a tela compartilhada. Fica melhor pra você à noite durante a semana ou no sábado?'],
+  diagnostico: ['Amostra pronta', '{nome}, a amostra ficou pronta! 🎉\nMontei com dados de exemplo pra você ver como seria o seu dia com o sistema. Quando a gente marca os 30 minutos pra eu te mostrar?'],
+  proposta: ['Confirmação (fechar)', '{nome}, confirmando o que combinamos:\n\n✅ Entra: …\n❌ Não entra: …\n📅 Prazo: …\n💰 Valor: {valor}\n💳 Pagamento: 50% pra começar ({entrada}) e 50% na entrega. Ou até 12x no cartão.\n\nSe estiver tudo certo, é só responder "fechado" que eu já começo.'],
+  followup: ['Follow-up', 'Oi, {nome}! Tudo certo por aí? Passando pra saber se ficou alguma dúvida sobre o que conversamos. Se quiser, ajusto alguma coisa pra caber melhor no que você precisa.'],
+  entrada: ['Cobrar entrada', '{nome}, tudo pronto pra começar! 🚀\nPra eu iniciar, falta só a entrada de 50% ({entrada}). Pode ser no Pix: [sua chave Pix].\nAssim que cair, te aviso e começo.'],
+  final: ['Cobrar 2ª metade', '{nome}, o sistema da {empresa} está pronto! 🎉\nFalta só a segunda metade ({final}). Assim que cair, te passo o acesso e te mostro como usar.\nPix: [sua chave Pix]'],
+  mensal: ['Lembrar mensalidade', 'Oi, {nome}! Passando pra lembrar da mensalidade do sistema ({mensal}), que vence dia {vence}.\nSe precisar ajustar alguma coisa, me fala.'],
+  indicacao: ['Pedir indicação', '{nome}, já faz um mês que o sistema está rodando aí na {empresa}. Tá te ajudando? 😊\nSe você conhece outro dono de negócio que sofre com algo parecido, me indica? Faz muita diferença pra mim.'],
+  parabens: ['Parabéns 🎂', 'Feliz aniversário, {nome}! 🎉 Muita saúde e sucesso pra você e pra {empresa}. Um abraço!'],
+};
+const MODELO_DA_ETAPA = { Conversa: 'conversa', Qualificado: 'qualificado', Diagnóstico: 'diagnostico', Proposta: 'proposta' };
+function preencher(chave, l) {
+  return MODELOS[chave][1].replace(/\{(\w+)\}/g, (_, k) => ({ nome: primeiro(l.nome), empresa: l.empresa || 'sua empresa', dor: l.dor || 'o que te toma tempo',
+    valor: reais(l.valor), entrada: reais(parte(l, 'entrada')), final: reais(parte(l, 'final')), mensal: reais(l.mensalidade), vence: l.venceDia || '…' }[k] || ''));
+}
+function abrirMensagem(l, tipo) {
+  let opcoes;
+  if (aberto(l)) opcoes = [MODELO_DA_ETAPA[l.etapa], 'followup'];
+  else if (l.etapa === 'Fechado') opcoes = ['entrada', 'final', 'mensal', 'indicacao'].filter(k => k !== 'mensal' || Number(l.mensalidade));
+  else opcoes = ['followup'];
+  const n = diasNiver(l.aniversario);
+  if (n !== null && n <= 1) opcoes.push('parabens');
+  // Sem tipo pedido, o fechado recebe a mensagem do que falta: entrada, 2ª metade…
+  const daVez = l.etapa === 'Fechado' ? (!l.entradaPaga ? 'entrada' : !l.finalPaga ? 'final' : Number(l.mensalidade) ? 'mensal' : 'indicacao') : opcoes[0];
+  const chave = tipo && MODELOS[tipo] ? tipo : daVez;
+  if (!opcoes.includes(chave)) opcoes.unshift(chave);
+  $('msgCorpo').innerHTML = `<div class="g-topo">${av(l)}<div><h2>Mensagem para ${esc(primeiro(l.nome))}</h2><div class="pequeno">${l.empresa ? esc(l.empresa) + ' · ' : ''}edite antes de mandar</div></div></div>
+    <div class="chips">${opcoes.map(k => `<button class="chip ${k === chave ? 'on' : ''}" data-modelo="${k}">${MODELOS[k][0]}</button>`).join('')}</div>
+    <textarea id="txtMsg">${esc(preencher(chave, l))}</textarea>
+    ${l.telefone ? '' : '<div class="pequeno" style="color:var(--ambar)">Esse cliente está sem WhatsApp cadastrado: o WhatsApp vai abrir para você escolher o contato.</div>'}
+    <div class="par"><button class="botao grande" id="fecharMsg">Cancelar</button><a class="botao wpp grande" id="mandarMsg" target="_blank" rel="noopener">Abrir no WhatsApp →</a></div>`;
+  const atualizarLink = () => { $('mandarMsg').href = linkWpp(l.telefone, $('txtMsg').value); };
+  atualizarLink();
+  $('txtMsg').oninput = atualizarLink;
+  $('msgCorpo').querySelectorAll('[data-modelo]').forEach(b => b.onclick = () => abrirMensagem(l, b.dataset.modelo));
+  $('fecharMsg').onclick = () => $('msg').close();
+  $('mandarMsg').onclick = ev => {
+    // Trava: texto com "[ ]" ou "…" ainda tem parte para preencher (Pix, prazo…).
+    if (/\[|…/.test($('txtMsg').value) && !confirm('A mensagem ainda tem partes para preencher ([ ] ou …). Mandar assim mesmo?')) { ev.preventDefault(); return; }
+    $('msg').close();
+    // Mandar mensagem conta como movimento (tira do "esfriando").
+    const mudanca = { id: l.id };
+    if (chave === 'indicacao') mudanca.indicacaoPedida = 'sim';
+    salvarRapido(mudanca);
+  };
+  if ($('detalhe').open) $('detalhe').close();
+  $('msg').showModal();
+}
+
+// ---------- ficha do cliente ----------
+function linhaInfo(rotulo, valor) { return valor ? `<div><small>${rotulo}</small>${valor}</div>` : ''; }
+
+// A conta do prejuízo, igual à da página do questionário (mudou lá, muda aqui).
+const FAIXAS_PERDA = {
+  // tempo = horas POR DIA, contado em 260 dias por ano (5 por semana, sem sábado)
+  tempo: { 'Até 30 min': 0.25, 'De 30 min a 1 hora': 0.75, 'De 1 a 2 horas': 1.5, 'Mais de 2 horas': 2.5 },
+  clientes: { '1 a 2 por semana': 1.5, 'De 3 a 5 por semana': 4, 'De 6 a 9 por semana': 7.5, '10 ou mais por semana': 12 },
+};
+const milhar = n => Math.round(n).toLocaleString('pt-BR');
+// 0.25 → "15 min", 1.5 → "1h30", 2 → "2 h"
+const duracao = h => h < 1 ? Math.round(h * 60) + ' min' : Math.floor(h) + (h % 1 ? 'h' + String(Math.round(h % 1 * 60)).padStart(2, '0') : ' h');
+function mesesInteiros(h) {
+  const x = h / 8 / 22, m = Math.round(x);
+  if (x < 1.25) return '1 mês inteiro de trabalho';
+  if (x < 1.75) return '1 mês e meio de trabalho';
+  if (m < 12) return 'uns ' + m + ' meses inteiros de trabalho';
+  const a = m / 12;
+  return a < 1.25 ? '1 ano inteiro de trabalho' : a < 1.75 ? '1 ano e meio de trabalho' : Math.round(a) + ' anos inteiros de trabalho';
+}
+/** Cola da reunião: o prejuízo dele, de onde vem cada número e como defender. */
+function colaReuniao(l) {
+  const v = (FAIXAS_PERDA[l.perdeTipo] || {})[l.perdeQtd];
+  if (!v) return '';
+  const horas = l.perdeTipo === 'tempo';
+  const ano = horas ? Math.round(v * 260) : Math.round(v * 52), cinco = ano * 5;
+  const vale = Number(String(l.quantoVale || '').replace(/\D/g, '')) || 0;
+  const linhas = [
+    ['O prejuízo dele', horas
+      ? `<b>${milhar(ano)} horas por ano</b> · ${milhar(cinco)} em 5 anos (${mesesInteiros(cinco)})`
+      : `<b>${milhar(ano)} clientes por ano</b> · ${milhar(cinco)} em 5 anos`],
+    ['Em dinheiro', vale
+      ? `<b>${reais(ano * vale)} por ano</b> · ${reais(cinco * vale)} em 5 anos <span class="pequeno">(ele disse: ${reais(vale)} por ${horas ? 'hora' : 'cliente'})</span>`
+      : '<span class="pequeno">ele não digitou quanto vale 1 ' + (horas ? 'hora' : 'cliente') + '. Pergunte na reunião e faça a conta junto com ele</span>'],
+    ['De onde vem', horas
+      ? `marcou "${esc(l.perdeQtd)}" por dia → contamos ${duracao(v)} × 260 dias úteis no ano`
+      : `marcou "${esc(l.perdeQtd)}" → contamos ${v.toLocaleString('pt-BR')} clientes × 52 semanas`],
+    ['Se ele questionar', '"É uma estimativa a partir do que você mesmo respondeu." '
+      + (horas ? 'Contei só 5 dias por semana; se abre no sábado, é mais. Sem férias: tirando 10%, ainda é muito.'
+        : 'E conta só uma compra de cada cliente: o real é maior.'
+          + (vale ? ' (O dinheiro é o que entra, não o lucro.)' : ''))],
+    ['Orçamento', !l.orcamento ? '' : l.orcamento === 'Ainda não sei'
+      ? 'Ainda não sabe. Antes da amostra, pergunte no WhatsApp quanto pensou em investir'
+      : `<b>${esc(l.orcamento)}</b> → monte a amostra cabendo aqui`],
+  ];
+  return linhas.map(([r, t]) => linhaInfo(r, t)).join('');
+}
+function abrirDetalhe(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  const i = ETAPAS.indexOf(l.etapa);
+  const classePassos = l.etapa === 'Fechado' ? 'ganho' : l.etapa === 'Perdido' ? 'perdido' : '';
+  const proxima = i < 4 ? ETAPAS[i + 1] : null;
+  const q = quando(l);
+  const ideias = assuntos(l);
+  const historico = notas.filter(n => n.leadId === l.id).sort((a, b) => b.data.localeCompare(a.data));
+  const ig = (l.instagram || '').replace(/^@/, '');
+  const cola = colaReuniao(l);
+
+  const venda = linhaInfo('A dor', esc(l.dor))
+    + linhaInfo('Orçamento', esc(l.orcamento))
+    + linhaInfo('Valor', Number(l.valor) ? reais(l.valor) : '')
+    + linhaInfo('Próxima ação', aberto(l) && l.proximaAcao ? esc(l.proximaAcao) + (q !== null ? ` · <span style="color:${q < 0 ? 'var(--vermelho)' : 'var(--fraco)'}">${q < 0 ? 'atrasado, era ' : ''}${ddmm(l.dataProxima)}</span>` : '') : '')
+    + (l.etapa === 'Perdido' ? linhaInfo('Por que perdeu', esc(l.motivoPerda)) : '')
+    + (l.etapa === 'Fechado' && l.fechadoEm ? linhaInfo('Fechou em', ddmm(l.fechadoEm) + '/' + l.fechadoEm.slice(0, 4)) : '');
+  const posVenda = l.etapa !== 'Fechado' ? '' :
+    linhaInfo('Pagamento', `Entrada ${reais(parte(l, 'entrada'))}: ${l.entradaPaga ? '✓ paga' : '<b style="color:var(--ambar)">falta</b>'} · Entrega ${reais(parte(l, 'final'))}: ${l.finalPaga ? '✓ paga' : '<b style="color:var(--ambar)">falta</b>'}`)
+    + linhaInfo('Entrega', l.entregaEm ? ddmm(l.entregaEm) : '<span class="pequeno">sem data</span>')
+    + linhaInfo('Mensalidade', Number(l.mensalidade) ? reais(l.mensalidade) + (l.venceDia ? ' · vence dia ' + esc(l.venceDia) : '') : 'Sem mensalidade');
+  const contato = linhaInfo('WhatsApp', esc(l.telefone)) + linhaInfo('Cargo', esc(l.cargo)) + linhaInfo('Cidade', esc(l.cidade))
+    + linhaInfo('E-mail', l.email ? `<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>` : '')
+    + linhaInfo('Instagram', ig ? `<a href="https:\/\/instagram.com/${encodeURIComponent(ig)}" target="_blank" rel="noopener">@${esc(ig)}</a>` : '');
+  const relacao = linhaInfo('Aniversário', esc(l.aniversario)) + linhaInfo('Time', esc(l.time))
+    + linhaInfo('Gosta de', esc(l.interesses)) + linhaInfo('Família', esc(l.familia)) + linhaInfo('Vale lembrar', esc(l.observacoes));
+
+  $('detalheCorpo').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px"><span class="pill">${esc(l.etapa)}</span><span class="pequeno">veio de ${esc(l.origem || '—')}</span>
+      <span class="espaco"></span><button class="botao" data-fechar-ficha>✕</button></div>
+    <div class="g-topo">${av(l)}<div><h2>${esc(l.nome)}</h2>${l.empresa ? `<div class="pequeno" style="font-size:14px">${esc(l.empresa)}</div>` : ''}</div></div>
+    <div class="passos ${classePassos}">${FUNIL.map((e, k) => `<span class="${k <= i ? 'feito' : ''}"></span>`).join('')}</div>
+    ${ideias.length ? `<div class="assunto"><b>PARA PUXAR ASSUNTO</b>${ideias.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+    <button class="botao wpp grande" data-msg="${l.id}">💬 Mensagem no WhatsApp</button>
+    ${proxima ? `<button class="botao azul grande" data-mover="${l.id}" data-para="${proxima}">Passar para ${proxima}</button>` : ''}
+    ${cola && aberto(l) ? `<h3>📊 Para a reunião</h3><div class="info">${cola}</div>` : ''}
+    ${venda ? `<h3>A venda</h3><div class="info">${venda}</div>` : ''}
+    ${posVenda ? `<h3>Depois de fechar</h3><div class="info">${posVenda}</div>` : ''}
+    ${contato ? `<h3>Quem é</h3><div class="info">${contato}</div>` : ''}
+    ${relacao ? `<h3>A relação</h3><div class="info">${relacao}</div>`
+      : `<button class="abrir-mais" data-editar="${l.id}" data-mais="1">＋ Ainda não sabemos nada pessoal dele. Completar</button>`}
+    <h3>Histórico</h3>
+    <div class="anotar"><input id="novaNota" placeholder="O que conversaram hoje?"><button data-anotar="${l.id}" aria-label="Anotar">＋</button></div>
+    ${historico.length ? `<div class="info">${historico.map(n => `<div class="nota"><small>${ddmm(n.data)} · ${esc(n.data.slice(11))}</small>${esc(n.texto)}</div>`).join('')}</div>`
+      : '<div class="pequeno">Nenhuma conversa anotada ainda.</div>'}
+    <div class="par">
+      <button class="botao grande" data-editar="${l.id}">Editar</button>
+      ${aberto(l) ? `<button class="botao grande" data-perder="${l.id}" style="color:var(--vermelho)">Perdi</button>`
+        : `<button class="botao grande" data-reabrir="${l.id}">Reabrir</button>`}
+    </div>`;
+  if (!$('detalhe').open) $('detalhe').showModal();
+}
+
+// ---------- formulário ----------
+function chips(campo, opcoes, multi, perigo) {
+  const marcado = o => multi ? (escolha[campo] || []).includes(o) : escolha[campo] === o;
+  $('c_' + campo).innerHTML = opcoes.map(o =>
+    `<button type="button" class="chip ${perigo ? 'perigo' : ''} ${marcado(o) ? 'on' : ''}" data-chip="${campo}" data-valor="${esc(o)}" ${multi ? 'data-multi="1"' : ''}>${esc(o)}</button>`).join('');
+}
+function desenharChips() {
+  chips('origem', ORIGENS);
+  chips('etapa', ETAPAS);
+  chips('motivoPerda', MOTIVOS, false, true);
+  chips('melhorHorario', HORARIOS);
+  chips('interesses', INTERESSES, true);
+  $('blocoMotivo').hidden = escolha.etapa !== 'Perdido';
+  $('blocoFechado').hidden = escolha.etapa !== 'Fechado';
+  const data = $('f_dataProxima').value;
+  $('c_quando').innerHTML = QUANDO.map(([t, n]) =>
+    `<button type="button" class="chip ${data === dataISO(n) ? 'on' : ''}" data-quando="${n}">${t}</button>`).join('');
+}
+function mostrarMais(sim) {
+  $('maisCampos').hidden = !sim;
+  $('abrirMais').hidden = sim;
+}
+function abrirForm(lead, etapaForcada, abrirTudo) {
+  editando = lead || null;
+  $('formTitulo').textContent = lead ? 'Editar cliente' : 'Novo cliente';
+  TEXTOS.forEach(c => { $('f_' + c).value = lead ? lead[c] || '' : ''; });
+  if (!lead) $('f_dataProxima').value = dataISO(0);
+  escolha.origem = lead ? lead.origem : 'Instagram';
+  escolha.etapa = etapaForcada || (lead ? lead.etapa : 'Conversa');
+  escolha.motivoPerda = lead ? lead.motivoPerda : '';
+  escolha.melhorHorario = lead ? lead.melhorHorario : '';
+  escolha.interesses = lead && lead.interesses ? lead.interesses.split(',').map(s => s.trim()) : [];
+  // Cadastro novo começa curto; a parte pessoal abre quando tem algo nela ou quando pedem.
+  const temPessoal = lead && ['cargo', 'cidade', 'email', 'instagram', 'aniversario', 'time', 'interesses', 'familia', 'observacoes', 'melhorHorario'].some(c => lead[c]);
+  mostrarMais(!!(abrirTudo || temPessoal));
+  $('erro').textContent = '';
+  desenharChips();
+  if ($('detalhe').open) $('detalhe').close();
+  $('form').showModal();
+}
+// Digitar "1205" vira "12/05" sozinho.
+$('f_aniversario').oninput = e => {
+  const n = e.target.value.replace(/\D/g, '').slice(0, 4);
+  e.target.value = n.length > 2 ? n.slice(0, 2) + '/' + n.slice(2) : n;
+};
+$('salvarBtn').onclick = async () => {
+  const lead = {
+    origem: escolha.origem, etapa: escolha.etapa, motivoPerda: escolha.motivoPerda || '',
+    melhorHorario: escolha.melhorHorario || '', interesses: (escolha.interesses || []).join(', '),
+  };
+  TEXTOS.forEach(c => { lead[c] = $('f_' + c).value.trim(); });
+  if (editando) lead.id = editando.id;
+  if (!lead.nome) { $('erro').textContent = 'Falta o nome.'; return; }
+  if (lead.etapa === 'Perdido' && !lead.motivoPerda) { $('erro').textContent = 'Escolha por que perdeu.'; return; }
+  if (lead.aniversario && !/^\d{2}\/\d{2}$/.test(lead.aniversario)) { $('erro').textContent = 'Aniversário no formato dd/mm (ex.: 12/05).'; return; }
+  if (lead.venceDia && !(Number(lead.venceDia) >= 1 && Number(lead.venceDia) <= 31)) { $('erro').textContent = 'Dia do vencimento: de 1 a 31.'; return; }
+  const fechou = lead.etapa === 'Fechado' && (!editando || editando.etapa !== 'Fechado');
+  $('salvarBtn').disabled = true;
+  try {
+    await api('salvar', lead);
+    $('form').close();
+    await carregar();
+    if (fechou) comemorar(lead);
+  } catch (e) {
+    $('erro').textContent = e.message || 'Não salvou. Tente de novo.';
+  } finally {
+    $('salvarBtn').disabled = false;
+  }
+};
+$('cancelar').onclick = () => $('form').close();
+$('btnNovo').onclick = () => ensaio ? toast('Saia do tour para cadastrar um cliente de verdade') : abrirForm();
+$('abrirMais').onclick = () => mostrarMais(true);
+$('f_dataProxima').oninput = desenharChips;
+
+// ---------- meta do mês ----------
+let mesMeta = mesISO(0);
+function abrirMeta() {
+  mesMeta = mesISO(0);
+  desenharMeta();
+  $('erroMeta').textContent = '';
+  $('metaDlg').showModal();
+}
+function desenharMeta() {
+  const meses = [mesISO(0), mesISO(1)];
+  $('c_mesMeta').innerHTML = meses.map((m, i) => `<button type="button" class="chip ${m === mesMeta ? 'on' : ''}" data-mes-meta="${m}">${i ? 'Próximo' : 'Este'} mês · ${nomeMes(m)}</button>`).join('');
+  const m = metaDo(mesMeta);
+  $('m_contratos').value = m.contratos;
+  $('m_valor').value = m.valor || '';
+}
+$('cardMeta').onclick = abrirMeta;
+$('metaCancelar').onclick = () => $('metaDlg').close();
+$('metaSalvar').onclick = async () => {
+  const n = Number($('m_contratos').value.replace(/\D/g, ''));
+  if (!(n >= 1 && n <= 999)) { $('erroMeta').textContent = 'Diga quantos contratos (de 1 a 999).'; return; }
+  $('metaSalvar').disabled = true;
+  try {
+    await api('salvarMeta', mesMeta, n, $('m_valor').value.replace(/\D/g, ''));
+    $('metaDlg').close();
+    await carregar();
+    toast(`Meta de ${nomeMes(mesMeta)}: ${n} contratos 🎯`);
+  } catch (e) { $('erroMeta').textContent = e.message || 'Não salvou.'; }
+  finally { $('metaSalvar').disabled = false; }
+};
+
+// ---------- ações ----------
+function toast(txt) { const t = $('toast'); t.textContent = txt; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2800); }
+// Salva uma mudança pequena: a tela muda na hora e o servidor confirma depois.
+async function salvarRapido(mudanca, otimista) {
+  if (otimista) { otimista(); desenhar(); }
+  try { await api('salvar', mudanca); await carregar(); return true; }
+  catch (e) { alert(e.message || 'Não salvou.'); await carregar(); return false; }
+}
+function comemorar(l) {
+  festa();
+  toast(`Fechou com ${primeiro(l.nome)}! 🎉 Próximo passo: cobrar a entrada (aba Clientes)`);
+  tourEvento('fechado');
+}
+async function mover(l, etapa) {
+  if (!l || l.etapa === etapa) return;
+  if (etapa === 'Perdido') return abrirForm(l, 'Perdido'); // precisa do motivo
+  const ok = await salvarRapido({ id: l.id, etapa }, () => { l.etapa = etapa; });
+  if (!ok) return;
+  if (etapa === 'Fechado') comemorar(l); else toast(`${primeiro(l.nome)} → ${etapa}`);
+}
+function adiar(l, dias, tarefaEl) {
+  tarefaEl.classList.add('feita');
+  setTimeout(async () => {
+    if (!leads.includes(l)) return; // a lista trocou (ex.: saiu do tour) no meio do caminho
+    await salvarRapido({ id: l.id, dataProxima: dataISO(dias) }, () => { l.dataProxima = dataISO(dias); });
+    toast(`Feito ✓ · ${primeiro(l.nome)} volta ${dias === 0 ? 'mais tarde hoje' : dias === 1 ? 'amanhã' : 'dia ' + ddmm(dataISO(dias))}`);
+    tourEvento('adiado');
+  }, 300);
+}
+
+// Um ouvinte só para todos os cliques.
+document.addEventListener('click', async ev => {
+  const rotulo = ev.target.closest('label');
+  if (rotulo) {
+    // Botões "📅" abrem o calendário de propósito (no PC, só clicar no campo não abre).
+    const cal = rotulo.querySelector('input[type=date]');
+    if (cal && ev.target !== cal && cal.showPicker) { try { cal.showPicker(); } catch (e) {} }
+    return;
+  }
+  const el = ev.target.closest('[data-aba], [data-vista], [data-msg], [data-feito], [data-adiar], [data-avancar], [data-pagar], [data-mover], [data-reabrir], [data-editar], [data-perder], [data-anotar], [data-chip], [data-quando], [data-mes-meta], [data-fechar-ficha], [data-abrir]');
+  if (!el) return;
+  const d = el.dataset;
+  const achar = id => leads.find(l => l.id === id);
+  if (d.aba) return irPara(d.aba);
+  if (d.vista) { vista = d.vista; return aplicarVista(); }
+  if (d.fecharFicha !== undefined) return $('detalhe').close();
+  if (d.msg) return abrirMensagem(achar(d.msg), d.tipo);
+  if (d.feito) { const t = el.closest('.tarefa'); t.classList.add('marcada'); t.querySelector('.depois').hidden = false; return; }
+  if (d.adiar) { const t = el.closest('.tarefa'); return adiar(achar(t.dataset.id), Number(d.adiar), t); }
+  if (d.avancar) { const l = achar(d.avancar); return mover(l, ETAPAS[ETAPAS.indexOf(l.etapa) + 1]); }
+  if (d.pagar) {
+    const l = achar(d.id), campo = d.pagar;
+    const valor = reais(parte(l, campo === 'finalPaga' ? 'final' : 'entrada'));
+    if (!ensaio && !confirm(`Confirmar que ${primeiro(l.nome)} pagou ${valor}?`)) return;
+    const ok = await salvarRapido({ id: l.id, [campo]: 'sim' }, () => { l[campo] = 'sim'; });
+    if (ok) { toast(`${valor} recebido de ${primeiro(l.nome)} 💰`); tourEvento('pago'); }
+    return;
+  }
+  if (d.mover) { $('detalhe').close(); return mover(achar(d.mover), d.para); }
+  if (d.reabrir) { $('detalhe').close(); return salvarRapido({ id: d.reabrir, etapa: 'Conversa', dataProxima: dataISO(0) }); }
+  if (d.editar) return abrirForm(achar(d.editar), null, !!d.mais);
+  if (d.perder) return abrirForm(achar(d.perder), 'Perdido');
+  if (d.anotar) {
+    const texto = $('novaNota').value.trim();
+    if (!texto) return;
+    el.disabled = true;
+    try { await api('anotar', d.anotar, texto); await carregar(); abrirDetalhe(d.anotar); }
+    catch (e) { alert(e.message || 'Não anotou.'); el.disabled = false; }
+    return;
+  }
+  if (d.chip) {
+    if (d.multi) { const lista = escolha[d.chip] || []; escolha[d.chip] = lista.includes(d.valor) ? lista.filter(v => v !== d.valor) : lista.concat(d.valor); }
+    else escolha[d.chip] = d.valor;
+    return desenharChips();
+  }
+  if (d.quando) { $('f_dataProxima').value = dataISO(+d.quando); return desenharChips(); }
+  if (d.mesMeta) { mesMeta = d.mesMeta; return desenharMeta(); }
+  if (d.abrir) return abrirDetalhe(d.abrir);
+});
+// Calendários: próxima data da tarefa e data de entrega.
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (!t.value) return;
+  if (t.matches('[data-data]')) {
+    const tarefa = t.closest('.tarefa');
+    adiar(leads.find(x => x.id === tarefa.dataset.id), Math.max(0, diasAte(t.value)), tarefa);
+  }
+  if (t.matches('[data-entrega]')) {
+    const l = leads.find(x => x.id === t.dataset.entrega);
+    salvarRapido({ id: l.id, entregaEm: t.value }, () => { l.entregaEm = t.value; }).then(ok => ok && toast(`Entrega de ${primeiro(l.nome)}: ${ddmm(t.value)} 📦`));
+  }
+});
+// Tocar fora da janela fecha.
+['detalhe', 'form', 'msg', 'metaDlg'].forEach(id => $(id).addEventListener('click', e => { if (e.target === $(id)) $(id).close(); }));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'novaNota') document.querySelector('[data-anotar]').click();
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('busca').focus(); }
+});
+$('busca').oninput = desenhar;
+
+// ---------- arrastar entre colunas (PC) ----------
+let arrastado = null;
+document.addEventListener('dragstart', e => {
+  const c = e.target.closest && e.target.closest('.cartao');
+  if (!c) return;
+  arrastado = c.dataset.id;
+  c.classList.add('arrastando');
+  document.body.classList.add('arrastando');
+  e.dataTransfer.setData('text/plain', arrastado);
+});
+document.addEventListener('dragend', () => {
+  document.body.classList.remove('arrastando');
+  document.querySelectorAll('.arrastando, .alvo').forEach(el => el.classList.remove('arrastando', 'alvo'));
+});
+document.addEventListener('dragover', e => {
+  const col = e.target.closest && e.target.closest('[data-etapa]');
+  if (!col || !arrastado) return;
+  e.preventDefault(); // sem isso o navegador não deixa soltar
+  document.querySelectorAll('.alvo').forEach(el => el !== col && el.classList.remove('alvo'));
+  col.classList.add('alvo');
+});
+document.addEventListener('drop', e => {
+  const col = e.target.closest && e.target.closest('[data-etapa]');
+  if (!col || !arrastado) return;
+  e.preventDefault();
+  const l = leads.find(x => x.id === arrastado);
+  arrastado = null;
+  mover(l, col.dataset.etapa);
+});
+
+// ---------- festa ao fechar ----------
+function festa() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = $('festa'), cx = cv.getContext('2d'); cv.width = innerWidth; cv.height = innerHeight;
+  const cores = ['#6EE7A0', '#A9C1FF', '#F7B84B', '#F9A8D4', '#C4B5FD'];
+  const p = Array.from({ length: 140 }, () => ({ x: innerWidth / 2, y: innerHeight * .35, vx: (Math.random() - .5) * 16, vy: Math.random() * -14 - 4,
+    r: Math.random() * 5 + 3, c: cores[Math.floor(Math.random() * cores.length)], g: Math.random() * 360 }));
+  let t = 0;
+  (function q() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    p.forEach(o => { o.x += o.vx; o.y += o.vy; o.vy += .45; o.vx *= .99; o.g += 8; cx.save(); cx.translate(o.x, o.y); cx.rotate(o.g * Math.PI / 180); cx.fillStyle = o.c; cx.fillRect(-o.r, -o.r / 2, o.r * 2, o.r); cx.restore(); });
+    if (++t < 140) requestAnimationFrame(q); else cx.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+
+// ---------- tour guiado ----------
+// Acende uma parte da tela por vez. Durante o tour o CRM usa clientes de
+// exemplo e não salva nada ("ensaio"): os passos de "faça agora" não mexem
+// nos clientes de verdade. Ao sair, os dados reais voltam.
+const TOUR = [
+  { aba: 'inicio', alvo: '#cardMeta', t: 'Sua meta do mês 🎯', p: 'O anel enche a cada contrato fechado no mês. Toque nele para mudar a meta deste mês ou do próximo. Durante este tour, os clientes são de exemplo: nada que você fizer agora é salvo.' },
+  { aba: 'inicio', alvo: '#blocoHoje', t: 'Sua lista do dia ✅', p: 'Tudo que é para hoje, atrasados primeiro. O botão 💬 abre a mensagem pronta. Fez? Marca e diz quando volta a falar com a pessoa.',
+    faca: 'Faça agora: marque o quadradinho de uma tarefa e escolha uma opção.', espera: 'adiado' },
+  { aba: 'inicio', alvo: '#blocoFrio', t: '⚠️ Cliente esfriando', p: 'Mais de 5 dias sem movimento. Cliente que esfria some sem dizer não: puxa assunto antes.' },
+  { aba: 'inicio', alvo: '#blocoCobrar', t: '💰 Cobranças', p: 'Regra 50/50: entrada para começar, o resto na entrega. Aqui aparece quem deve e quanto. Toque para abrir a mensagem de cobrança.' },
+  { aba: 'vendas', alvo: '.coluna[data-etapa="Proposta"] .col-info', t: 'Onde a venda trava', p: 'Cada coluna mostra quantos % da etapa anterior chegaram até ela. Vermelho (abaixo de 50%) é onde você perde cliente. Isso se chama taxa de conversão.' },
+  { aba: 'vendas', alvo: '.coluna[data-etapa="Fechado"]', t: 'O melhor momento 🎉', p: 'Quando o cliente responder "fechado", arraste o cartão para cá. No celular: abra o cliente e toque em "Passar para…".',
+    faca: 'Faça agora: leve o Vitor (em Proposta) até Fechado.', espera: 'fechado' },
+  { aba: 'clientes', alvo: '[data-cliente="a1"] .pagto', t: 'Depois de fechar 🤝', p: 'O Vitor veio para Clientes. Aqui ficam o pagamento, a data de entrega, a garantia de 30 dias e a mensalidade.',
+    faca: 'Faça agora: o Vitor mandou o Pix da entrada. Marque como pago.', espera: 'pago' },
+  { aba: 'quest', alvo: '#funilQuest', t: '📝 Questionário', p: 'Até que pergunta as pessoas chegam. A linha vermelha é onde mais desistem: é ela que se muda primeiro. Pronto! Para rever este tour, toque em "?".' },
+];
+let passo = -1, luz, balao;
+async function tour() {
+  if (!luz) { luz = document.createElement('div'); luz.className = 'tour-luz'; balao = document.createElement('div'); balao.className = 'tour-balao'; document.body.append(luz, balao); }
+  ensaio = true; demo._zerar(); $('selo').hidden = false;
+  await carregar();
+  passo = 0; mostrarPasso();
+}
+async function sairTour() {
+  passo = -1;
+  if (luz) { luz.remove(); balao.remove(); luz = balao = null; }
+  try { localStorage.setItem('crmTourV3', '1'); } catch (e) {}
+  if (ensaio) { ensaio = false; $('selo').hidden = !DEMO; irPara('inicio'); await carregar(); }
+}
+function mostrarPasso() {
+  const s = TOUR[passo];
+  if (s.aba !== abaAtual) irPara(s.aba);
+  if (s.aba === 'vendas' && vista !== 'quadro') { vista = 'quadro'; aplicarVista(); }
+  const el = document.querySelector(s.alvo);
+  if (!el) { passo++; return passo < TOUR.length ? mostrarPasso() : sairTour(); }
+  el.scrollIntoView({ block: 'nearest' });
+  const r = el.getBoundingClientRect(), m = 8;
+  Object.assign(luz.style, { top: r.top - m + 'px', left: r.left - m + 'px', width: r.width + 2 * m + 'px', height: r.height + 2 * m + 'px' });
+  balao.innerHTML = `<b class="t">${s.t}</b><p>${s.p}</p>${s.faca ? `<div class="faca">👉 ${s.faca}</div>` : ''}
+    <div class="tour-pe"><span class="pontos">${TOUR.map((_, i) => `<i class="${i === passo ? 'on' : ''}"></i>`).join('')}</span>
+      <button class="pular" id="tPular">Sair</button>${passo ? '<button id="tVoltar">Voltar</button>' : ''}
+      <button class="seguir" id="tSeguir" ${s.espera ? 'disabled' : ''}>${passo === TOUR.length - 1 ? 'Terminar' : 'Próximo →'}</button></div>`;
+  const bw = Math.min(340, innerWidth - 32);
+  balao.style.width = bw + 'px';
+  const bh = balao.offsetHeight;
+  let top = r.bottom + 16, left = Math.min(Math.max(16, r.left), innerWidth - bw - 16);
+  if (top + bh > innerHeight - 16) top = r.top - bh - 16;
+  if (top < 16) { top = Math.max(16, Math.min(r.top, innerHeight - bh - 16)); left = r.right + 16 + bw < innerWidth ? r.right + 16 : Math.max(16, r.left - bw - 16); }
+  Object.assign(balao.style, { top: top + 'px', left: left + 'px' });
+  $('tPular').onclick = sairTour;
+  if ($('tVoltar')) $('tVoltar').onclick = () => { passo--; mostrarPasso(); };
+  $('tSeguir').onclick = () => { passo++; if (passo < TOUR.length) mostrarPasso(); else { sairTour(); toast('Pronto! Você já sabe usar o CRM 💪'); } };
+}
+function tourEvento(nome) { if (passo < 0 || TOUR[passo].espera !== nome) return; toast('Isso! ✓'); setTimeout(() => { passo++; mostrarPasso(); }, 900); }
+addEventListener('resize', () => { if (passo >= 0) mostrarPasso(); });
+$('btnTour').onclick = tour;
+
+// ---------- carregar e entrar ----------
+async function carregar() {
+  const dados = await api('listar');
+  leads = dados.leads || [];
+  notas = dados.notas || [];
+  questionario = dados.questionario || null;
+  metas = dados.metas || [];
+  desenhar();
+}
+async function entrar() {
+  try {
+    await carregar();
+    try { localStorage.setItem('crmSenha', senha); } catch (e) {}
+    $('telaSenha').hidden = true;
+    $('app').hidden = false;
+    let visto = false;
+    try { visto = localStorage.getItem('crmTourV3') === '1'; } catch (e) {}
+    if (!visto) setTimeout(tour, 700);
+  } catch (e) {
+    $('erroSenha').textContent = e.message || 'Não entrou.';
+    $('telaSenha').hidden = false;
+  }
+}
+$('entrar').onclick = () => { senha = $('senha').value; entrar(); };
+$('senha').onkeydown = e => { if (e.key === 'Enter') $('entrar').click(); };
+
+$('dataHoje').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'short' });
+if (DEMO) {
+  $('selo').hidden = false;
+  entrar();
+} else {
+  try { senha = localStorage.getItem('crmSenha') || ''; } catch (e) {}
+  if (senha) entrar(); else $('telaSenha').hidden = false;
+}
+</script>
+</body>
+</html>
