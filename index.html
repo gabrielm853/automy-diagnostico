@@ -286,7 +286,6 @@ function render(){
     el.innerHTML=head(st)+`
       <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" maxlength="60" autocomplete="given-name" placeholder="Ex.: Carlos" value="${esc(S.nome)}"></div>
       <div class="field"><label for="f-tel">Seu WhatsApp, com DDD</label><input id="f-tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="Ex.: (88) 9 9999-9999" value="${esc(S.tel)}"></div>
-      <p class="hint" style="text-align:left">📲 Só uso pra te chamar se você parar no meio. Fica só comigo.</p>
       <div class="hp" aria-hidden="true"><label for="f-hp">Deixe em branco</label><input id="f-hp" tabindex="-1" autocomplete="off"></div>
       <span class="err" id="err" hidden>Preencha seu nome e o WhatsApp com DDD.</span>
       <div class="spacer"></div><button class="btn" id="ok">Continuar →</button>`;
