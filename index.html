@@ -211,7 +211,7 @@ function lossHead(st){const p=perda();return `<span class="cheer">${esc(st.c(fir
     :`<small>Só com essa tarefa, você perde por ano</small><strong><span id="hh">0</span> horas</strong><span>Em 5 anos são <b>${(p.n*5).toLocaleString("pt-BR")} horas</b>: ${tempo5(p.n)} de trabalho, só nisso. 😳</span>
     <label class="vh" for="f-vh">💸 Quer ver em dinheiro? Quanto vale 1 hora sua? <span class="vhin">R$ <input id="f-vh" inputmode="numeric" placeholder="0" value="${esc(S.vh)}"></span></label>`}<b id="vhout" hidden></b></div>
   <h2>${st.t}</h2>
-  <p>Toda solução vem com <b style="color:var(--fg)">uma tela sua, bonita e fácil de usar</b>, no celular e no computador. Quanto mais você investe, mais partes da empresa ela resolve.</p>`}
+  <p>Toda solução vem com <b style="color:var(--fg)">uma tela sob medida pro seu negócio</b>, no celular e no computador. Quanto mais você investe, mais partes da empresa ela resolve.</p>`}
 function next(){i++;render()}
 function countUp(el,to,show=x=>x.toLocaleString("pt-BR")){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=show(to);return}
@@ -286,7 +286,7 @@ function render(){
     el.innerHTML=head(st)+`
       <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" maxlength="60" autocomplete="given-name" placeholder="Ex.: Carlos" value="${esc(S.nome)}"></div>
       <div class="field"><label for="f-tel">Seu WhatsApp, com DDD</label><input id="f-tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="Ex.: (88) 9 9999-9999" value="${esc(S.tel)}"></div>
-      <p class="hint" style="text-align:left">📲 Se você parar no meio ou a mensagem não chegar, eu te chamo nesse número. Só pra isso, e ele fica só comigo.</p>
+      <p class="hint" style="text-align:left">📲 Só uso pra te chamar se você parar no meio. Fica só comigo.</p>
       <div class="hp" aria-hidden="true"><label for="f-hp">Deixe em branco</label><input id="f-hp" tabindex="-1" autocomplete="off"></div>
       <span class="err" id="err" hidden>Preencha seu nome e o WhatsApp com DDD.</span>
       <div class="spacer"></div><button class="btn" id="ok">Continuar →</button>`;
