@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CRM Automy</title>
 <link rel="icon" href="https://gabrielm853.github.io/automy-diagnostico/icone-crm.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0D10">
+<link rel="apple-touch-icon" href="icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
@@ -298,6 +301,7 @@
     </nav>
     <div class="espaco"></div>
     <label class="busca">🔎<input id="busca" placeholder="Buscar cliente…"><span class="tecla esconde-cel">Ctrl K</span></label>
+    <button class="botao" id="btnAvisos" title="Avisos de contato novo no celular" aria-label="Avisos de contato novo no celular">🔔</button>
     <button class="botao" id="btnTour" title="Rever o tour">?<span class="esconde-cel"> Como usar</span></button>
     <button class="botao verde" id="btnNovo">＋ Novo</button>
   </div>
@@ -468,6 +472,7 @@ async function api(funcao, ...args) {
   if (funcao === 'salvar') corpo.lead = args[0];
   else if (funcao === 'anotar') { corpo.leadId = args[0]; corpo.texto = args[1]; }
   else if (funcao === 'salvarMeta') { corpo.mes = args[0]; corpo.contratos = args[1]; corpo.valor = args[2]; }
+  else if (funcao === 'inscrever') corpo.inscricao = args[0];
   const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
   const j = await r.json();
   if (!j.ok) throw new Error(j.erro || 'Não entrou.');
@@ -1286,6 +1291,58 @@ async function entrar() {
     $('telaSenha').hidden = false;
   }
 }
+// ---------- atualizar sozinho ----------
+// A cada minuto, com o CRM na tela. Nunca no meio de uma ficha aberta,
+// de um arraste ou do tour: aí a lista mudaria debaixo da sua mão.
+let atualizando = false;
+async function atualizarSozinho() {
+  if (DEMO || ensaio || atualizando || document.hidden || $('app').hidden) return;
+  if (document.querySelector('dialog[open]') || document.body.classList.contains('arrastando')) return;
+  atualizando = true;
+  try { await carregar(); } catch (e) {} finally { atualizando = false; }
+}
+setInterval(atualizarSozinho, 60000);
+document.addEventListener('visibilitychange', atualizarSozinho);
+
+// ---------- avisos no celular (Web Push) ----------
+const temAvisos = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+if ('serviceWorker' in navigator && !DEMO) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'atualizar') atualizarSozinho(); });
+}
+function chaveBytes(b64) {
+  const s = b64.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((b64.length + 3) % 4);
+  return Uint8Array.from(atob(s), c => c.charCodeAt(0));
+}
+async function ligarAvisos() {
+  if (DEMO || ensaio) return toast('No modo exemplo os avisos ficam desligados');
+  if (!temAvisos) return toast('Este navegador não recebe avisos. No iPhone, instale o CRM na tela inicial antes.');
+  if (await Notification.requestPermission() !== 'granted') return toast('Avisos bloqueados: libere as notificações deste site nas configurações do navegador');
+  try {
+    const chave = await api('chaveAviso');
+    if (!chave) return toast('O servidor ainda não tem as chaves dos avisos');
+    const reg = await navigator.serviceWorker.ready;
+    let insc = await reg.pushManager.getSubscription();
+    try {
+      if (!insc) insc = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: chaveBytes(chave) });
+    } catch (e) {
+      // Chave trocada no servidor: a inscrição velha não serve mais.
+      if (insc) await insc.unsubscribe();
+      insc = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: chaveBytes(chave) });
+    }
+    await api('inscrever', insc.toJSON());
+    await api('testarAviso');
+    $('btnAvisos').classList.add('verde');
+    toast('Avisos ligados. Chegou uma notificação de teste?');
+  } catch (e) {
+    toast('Não ligou: ' + (e.message || e));
+  }
+}
+$('btnAvisos').onclick = ligarAvisos;
+if (temAvisos && !DEMO && Notification.permission === 'granted') {
+  navigator.serviceWorker.ready.then(r => r.pushManager.getSubscription()).then(s => { if (s) $('btnAvisos').classList.add('verde'); }).catch(() => {});
+}
+
 $('entrar').onclick = () => { senha = $('senha').value; entrar(); };
 $('senha').onkeydown = e => { if (e.key === 'Enter') $('entrar').click(); };
 
